@@ -1,0 +1,50 @@
+.sudoku-cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 18px;
+    font-family: monospace;
+    background-color: var(--bg-color, white);
+    color: var(--text-color, black);
+}
+
+/* Dark theme colors */
+[data-theme="dark"] .sudoku-cell,
+.light .sudoku-cell {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ccc;
+}
+
+.dark .sudoku-cell,
+[data-theme="light"] .sudoku-cell {
+    background-color: #121212;
+    color: #ffffff;
+    border-color: #333;
+}
+
+.sudoku-cell.readonly {
+    font-weight: bold;
+}
+
+[data-theme="dark"] .sudoku-cell.readonly,
+.light .sudoku-cell.readonly {
+    background-color: #f0f0f0;
+    color: #000000;
+}
+
+.dark .sudoku-cell.readonly,
+[data-theme="light"] .sudoku-cell.readonly {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .sudoku-cell {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+}

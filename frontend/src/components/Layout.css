@@ -1,0 +1,15 @@
+/* Desktop navigation - show by default, hide on mobile */
+.desktop-nav {
+    display: flex;
+}
+
+/* Mobile responsiveness - hide desktop nav on small screens */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+
+    header {
+        padding: '1rem 1rem' !important;
+    }
+}

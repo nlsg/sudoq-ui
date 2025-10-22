@@ -1,19 +1,149 @@
+/* Coordinate system wrapper */
+.sudoku-grid-wrapper-with-coords {
+    display: inline-block;
+}
+
+.sudoku-grid-with-coords {
+    display: inline-block;
+    position: relative;
+}
+
+/* Coordinate labels and corner */
+.coord-row {
+    display: flex;
+    height: 30px;
+}
+
+.coord-cell {
+    width: 40px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-color, #000);
+    position: relative;
+}
+
+.row-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    width: 30px !important;
+    height: 40px !important;
+    border-right: 2px solid var(--text-color, #000);
+    margin-right: 0px;
+    background-color: var(--bg-secondary, rgba(0, 0, 0, 0.05));
+}
+
+.column-label {
+    border-bottom: 2px solid var(--text-color, #000);
+    margin-bottom: 0px;
+    background-color: var(--bg-secondary, rgba(0, 0, 0, 0.05));
+}
+
+.corner-cell {
+    width: 30px !important;
+    height: 30px !important;
+    border-bottom: 2px solid var(--text-color, #000);
+    border-right: 2px solid var(--text-color, #000);
+    font-size: 10px;
+    background-color: var(--bg-accent, #f0f0f0);
+    color: var(--text-color, #000);
+}
+
+/* Grid with coordinates */
 .sudoku-row {
     display: flex;
 }
 
-.sudoku-cell {
-    width: 40px;
-    height: 40px;
-    text-align: center;
-    font-size: 18px;
+.sudoku-cell-container {
+    padding: 0;
     border: 1px solid #ccc;
 }
 
-.sudoku-cell:nth-child(3n) {
-    border-right: 2px solid #000;
+/* Dark theme borders */
+[data-theme="dark"] .sudoku-grid,
+.light .sudoku-grid {
+    border-color: #000000;
 }
 
-.sudoku-row:nth-child(3n) .sudoku-cell {
-    border-bottom: 2px solid #000;
+.dark .sudoku-grid,
+[data-theme="light"] .sudoku-grid {
+    border-color: #ffffff;
+}
+
+[data-theme="dark"] .sudoku-cell-container,
+.light .sudoku-cell-container {
+    border-color: #ccc;
+}
+
+.dark .sudoku-cell-container,
+[data-theme="light"] .sudoku-cell-container {
+    border-color: #333;
+}
+
+[data-theme="dark"] .sudoku-cell-container.thick-border-right,
+.light .sudoku-cell-container.thick-border-right {
+    border-right-color: #000000;
+}
+
+.dark .sudoku-cell-container.thick-border-right,
+[data-theme="light"] .sudoku-cell-container.thick-border-right {
+    border-right-color: #ffffff;
+}
+
+[data-theme="dark"] .sudoku-row.thick-border-bottom,
+.light .sudoku-row.thick-border-bottom {
+    border-bottom-color: #000000;
+}
+
+.dark .sudoku-row.thick-border-bottom,
+[data-theme="light"] .sudoku-row.thick-border-bottom {
+    border-bottom-color: #ffffff;
+}
+
+.sudoku-cell-container.thick-border-right {
+    border-right: 3px solid var(--text-color, #000);
+}
+
+.sudoku-row.thick-border-bottom {
+    border-bottom: 3px solid var(--text-color, #000);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .sudoku-grid {
+        border: 1px solid #000;
+    }
+
+    .coord-cell {
+        width: 32px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    .row-label {
+        width: 24px !important;
+        height: 32px !important;
+        font-size: 10px;
+    }
+
+    .corner-cell {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 8px;
+    }
+
+    .sudoku-cell-container {
+        border: 0.5px solid #ccc;
+    }
+
+    .sudoku-cell-container.thick-border-right {
+        border-right: 2px solid #000;
+    }
+
+    .sudoku-row.thick-border-bottom {
+        border-bottom: 2px solid #000;
+    }
 }

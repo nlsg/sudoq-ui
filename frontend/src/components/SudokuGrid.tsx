@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './SudokuGrid.css'; // We'll create this for styling
+import SudokuCell from './SudokuCell';
+import './SudokuGrid.css';
 
 interface SudokuGridProps {
     board: string; // 81-character string
@@ -23,33 +24,49 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
         setGrid(newGrid);
     }, [board]);
 
-    const handleChange = (row: number, col: number, value: string) => {
-        if (!grid[row][col]) { // only if empty originally?
-            const num = value === '' ? 0 : parseInt(value);
-            if (num >= 0 && num <= 9) {
-                onMove(row, col, num);
-            }
-        }
+    const handleCellChange = (row: number, col: number, value: number) => {
+        if (grid[row][col] !== null) return; // only if empty originally
+        onMove(row, col, value);
     };
 
+    // Count filled cells for progress
+    const filledCells = grid.flat().filter(cell => cell !== null).length;
+
+    // Column labels A-I
+    const columnLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+
     return (
-        <div className="sudoku-grid">
-            {grid.map((row, r) => (
-                <div key={r} className="sudoku-row">
-                    {row.map((cell, c) => (
-                        <input
-                            key={c}
-                            type="number"
-                            min="1"
-                            max="9"
-                            value={cell === null ? '' : cell}
-                            disabled={cell !== null} // disable pre-filled
-                            className="sudoku-cell"
-                            onChange={(e) => handleChange(r, c, e.target.value)}
-                        />
+        <div className="sudoku-grid-wrapper-with-coords">
+            <div className="sudoku-grid-with-coords">
+                {/* Top column labels */}
+                <div className="coord-row top-coords">
+                    <div className="coord-cell corner-cell">{filledCells}/81</div>
+                    {columnLabels.map((label, idx) => (
+                        <div key={idx} className="coord-cell column-label">
+                            {label}
+                        </div>
                     ))}
                 </div>
-            ))}
+
+                {/* Grid rows with row labels */}
+                {grid.map((row, r) => (
+                    <div key={r} className={`sudoku-row ${r % 3 === 2 && r < 8 ? 'thick-border-bottom' : ''}`}>
+                        {/* Row label */}
+                        <div className="coord-cell row-label">{r + 1}</div>
+
+                        {/* Sudoku cells */}
+                        {row.map((cell, c) => (
+                            <div key={c} className={`sudoku-cell-container ${c % 3 === 2 && c < 8 ? 'thick-border-right' : ''}`}>
+                                <SudokuCell
+                                    value={cell}
+                                    onChange={(value) => handleCellChange(r, c, value)}
+                                    readonly={cell !== null}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

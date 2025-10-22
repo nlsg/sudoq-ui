@@ -12,7 +12,13 @@ from app.schemas.board import (
     GameMove,
 )
 from app.db.models import SudokuBoard as SudokuBoardModel, User
-from app.core.sudoku import generate_puzzle, is_solved, make_move
+from app.core.sudoku import (
+    generate_puzzle,
+    is_solved,
+    make_move,
+    get_hint,
+    get_solution,
+)
 
 router = APIRouter()
 
@@ -107,13 +113,25 @@ async def delete_board(board_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/singleplayer", response_model=SudokuBoard)
-async def create_singleplayer_board(user_id: int, db: AsyncSession = Depends(get_db)):
+async def create_singleplayer_board(
+    user_id: int, difficulty: str = "medium", db: AsyncSession = Depends(get_db)
+):
     """Generate and create a new singleplayer board."""
-    # Check if user exists
+    # Check if user exists, create if not
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        # Create dummy user for demo
+        dummy_user = User(
+            username=f"user{user_id}",
+            email=f"user{user_id}@example.com",
+            hashed_password="dummy",
+            is_active=True,
+        )
+        db.add(dummy_user)
+        await db.commit()
+        await db.refresh(dummy_user)
+        user = dummy_user
 
     # Generate puzzle
     board_state = generate_puzzle()
@@ -160,3 +178,37 @@ async def make_move_on_board(
     await db.commit()
     await db.refresh(db_board)
     return db_board
+
+
+@router.get("/{board_id}/hint")
+async def get_hint_for_board(board_id: int, db: AsyncSession = Depends(get_db)):
+    """Get a hint for the board."""
+    result = await db.execute(
+        select(SudokuBoardModel).where(SudokuBoardModel.id == board_id)
+    )
+    db_board = result.scalar_one_or_none()
+    if not db_board:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    hint = get_hint(db_board.board_state)
+    if hint is None:
+        raise HTTPException(status_code=400, detail="No hint available")
+
+    return {"row": hint[0], "col": hint[1], "value": hint[2]}
+
+
+@router.get("/{board_id}/solve")
+async def solve_board(board_id: int, db: AsyncSession = Depends(get_db)):
+    """Get the solution for the board."""
+    result = await db.execute(
+        select(SudokuBoardModel).where(SudokuBoardModel.id == board_id)
+    )
+    db_board = result.scalar_one_or_none()
+    if not db_board:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    solution = get_solution(db_board.board_state)
+    if solution is None:
+        raise HTTPException(status_code=400, detail="Board is not solvable")
+
+    return {"solution": solution}
