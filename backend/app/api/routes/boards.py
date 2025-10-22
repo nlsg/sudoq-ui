@@ -3,9 +3,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 
-from database import get_db
-from app.schemas.board import SudokuBoard, SudokuBoardCreate, SudokuBoardUpdate
+from app.database import get_db
+from app.schemas.board import (
+    SudokuBoardBase,
+    SudokuBoard,
+    SudokuBoardCreate,
+    SudokuBoardUpdate,
+    GameMove,
+)
 from app.db.models import SudokuBoard as SudokuBoardModel, User
+from app.core.sudoku import generate_puzzle, is_solved, make_move
 
 router = APIRouter()
 
@@ -97,3 +104,59 @@ async def delete_board(board_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(board)
     await db.commit()
     return {"message": "Board deleted"}
+
+
+@router.post("/singleplayer", response_model=SudokuBoard)
+async def create_singleplayer_board(user_id: int, db: AsyncSession = Depends(get_db)):
+    """Generate and create a new singleplayer board."""
+    # Check if user exists
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Generate puzzle
+    board_state = generate_puzzle()
+
+    # Create board with player1 and player2 as same user (for singleplayer)
+    db_board = SudokuBoardModel(
+        board_state=board_state,
+        player1_id=user_id,
+        player2_id=user_id,
+        current_player_id=user_id,
+        status="ongoing",
+    )
+    db.add(db_board)
+    await db.commit()
+    await db.refresh(db_board)
+    return db_board
+
+
+@router.put("/{board_id}/move", response_model=SudokuBoard)
+async def make_move_on_board(
+    board_id: int, move: GameMove, db: AsyncSession = Depends(get_db)
+):
+    """Make a move on a board if valid."""
+    result = await db.execute(
+        select(SudokuBoardModel).where(SudokuBoardModel.id == board_id)
+    )
+    db_board = result.scalar_one_or_none()
+    if not db_board:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    if db_board.status != "ongoing":
+        raise HTTPException(status_code=400, detail="Game is not ongoing")
+
+    new_state = make_move(db_board.board_state, move.row, move.col, move.value)
+    if new_state is None:
+        raise HTTPException(status_code=400, detail="Invalid move")
+
+    db_board.board_state = new_state
+
+    if is_solved(new_state):
+        db_board.status = "completed"
+        db_board.winner_id = db_board.current_player_id
+
+    await db.commit()
+    await db.refresh(db_board)
+    return db_board
