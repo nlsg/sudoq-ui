@@ -1,0 +1,12 @@
+{
+    "ruff.enable": true,
+    "editor.formatOnSave": true,
+    "python-env.workspaceSearchPaths": [
+        "backend"
+    ],
+    "python.analysis.extraPaths": [
+        "backend",
+        "backend/app"
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python"
+}

@@ -1,0 +1,22 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.119.1",
+    "pydantic-settings>=2.11.0",
+    "sqlalchemy>=2.0.44",
+    "aiosqlite>=0.20.0",
+    "psycopg2-binary>=2.9.0",
+    "uvicorn>=0.38.0",
+    "pydantic[email]>=2.12.3",
+    "sudoq",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.14.1"]
+
+[tool.uv.sources]
+sudoq = { git = "https://github.com/nlsg/sudo-q" }
