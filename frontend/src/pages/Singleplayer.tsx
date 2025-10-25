@@ -133,6 +133,7 @@ const Singleplayer: React.FC = () => {
                 errorCount={errorCount}
                 difficulty={difficulty}
                 remainingCells={remainingCells}
+                boardId={currentBoard!.id}
                 onDifficultyChange={setDifficulty}
                 onStartNewGame={startNewGame}
                 onGetHint={getHint}

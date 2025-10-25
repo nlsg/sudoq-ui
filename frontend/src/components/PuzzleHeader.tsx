@@ -5,15 +5,21 @@ interface PuzzleHeaderProps {
     errorCount: number;
     difficulty: 'easy' | 'medium' | 'hard' | 'expert';
     remainingCells?: number;
+    boardId?: number;
     onDifficultyChange: (difficulty: 'easy' | 'medium' | 'hard' | 'expert') => void;
     onStartNewGame: () => void;
     onGetHint: () => void;
     onSolveGame: () => void;
 }
 
-const GameClock: React.FC<{ gameCompleted?: boolean }> = ({ gameCompleted = false }) => {
+const GameClock: React.FC<{ gameCompleted?: boolean; boardId?: number }> = ({ gameCompleted = false, boardId }) => {
     const [time, setTime] = React.useState(0);
     const [isRunning, setIsRunning] = React.useState(false);
+
+    React.useEffect(() => {
+        // Reset time when board changes (new game)
+        setTime(0);
+    }, [boardId]);
 
     React.useEffect(() => {
         let interval: number;
@@ -39,13 +45,13 @@ const GameClock: React.FC<{ gameCompleted?: boolean }> = ({ gameCompleted = fals
     return <div className="game-clock text-slate-900 dark:text-slate-100">Time: {formatTime(time)}</div>;
 };
 
-const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame }) => {
+const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame }) => {
     return (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-200 dark:border-slate-700">
             {/* Top row with stats */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-6">
-                    <GameClock gameCompleted={gameCompleted} />
+                    <GameClock gameCompleted={gameCompleted} boardId={boardId} />
                     <div className="text-sm text-red-600 font-semibold">
                         Errors: {errorCount}
                     </div>

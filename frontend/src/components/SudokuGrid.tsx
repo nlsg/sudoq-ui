@@ -130,6 +130,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
                         left: `${calculateCellPosition(activeCell.row, activeCell.col).x + cellWidth / 2}px`,
                         top: `${calculateCellPosition(activeCell.row, activeCell.col).y + cellHeight / 2}px`,
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                     onMouseEnter={() => {
                         // Clear any pending hide timeout when entering the wheel area
