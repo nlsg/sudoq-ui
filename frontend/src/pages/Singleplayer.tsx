@@ -139,7 +139,6 @@ const Singleplayer: React.FC = () => {
                 onGetHint={getHint}
                 onSolveGame={solveGame}
             />
-            {loading && <div className="text-slate-600 dark:text-slate-400 italic mt-2 mb-4">Loading game...</div>}
             {currentBoard && gameCompleted ? (
                 <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
             ) : currentBoard ? (
