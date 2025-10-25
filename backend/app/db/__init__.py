@@ -1,4 +1,5 @@
 # Import all models to register them with SQLAlchemy
-from .models import User, SudokuBoard
+from app.users.models import User
+from app.boards.models import SudokuBoard
 
 __all__ = ["User", "SudokuBoard"]
