@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             )}
 
             {/* Sidebar panel */}
-            <div className={`fixed top-0 left-0 h-full w-64 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 transform transition-transform duration-300 ease-in-out z-50 lg:z-30 shadow-xl border-r border-slate-300 dark:border-slate-700 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+            <div className={`fixed top-0 left-0 h-full w-64 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 transform transition-transform duration-300 ease-in-out z-50 shadow-xl border-r border-slate-300 dark:border-slate-700 ${isOpen ? 'translate-x-0' : '-translate-x-full'
                 } flex flex-col lg:translate-x-0`}>
 
                 {/* Header */}
