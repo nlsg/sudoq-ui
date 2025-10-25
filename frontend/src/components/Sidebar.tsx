@@ -41,14 +41,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         onClick={onClose}
                         className="block px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-slate-100 rounded-md transition-colors duration-200 font-medium"
                     >
-                        🏠 Home
+                        Home
                     </Link>
                     <Link
                         to="/singleplayer"
                         onClick={onClose}
                         className="block px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-slate-100 rounded-md transition-colors duration-200 font-medium"
                     >
-                        🎮 Singleplayer
+                        Singleplayer
                     </Link>
                 </nav>
 
