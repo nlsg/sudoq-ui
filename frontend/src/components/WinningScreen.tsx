@@ -20,18 +20,18 @@ interface WinningScreenProps {
 
 const WinningScreen: React.FC<WinningScreenProps> = ({ board, onPlayAgain }) => {
     return (
-        <div className="finished-screen">
-            <h2>🎉 Congratulations! 🎉</h2>
-            <p>You completed the Sudoku puzzle!</p>
-            <div className="game-stats">
+        <div className="text-center p-2 sm:p-4 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-4xl mb-4">🎉 Congratulations! 🎉</h2>
+            <p className="mb-6 text-slate-600 dark:text-slate-400">You completed the Sudoku puzzle!</p>
+            <div className="mb-6 p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
                 <p>Game completed successfully!</p>
                 {/* Could add more stats like hints used, etc. in future */}
             </div>
-            <div className="solved-grid-wrapper">
-                <h3>Completed Puzzle:</h3>
+            <div className="mb-6">
+                <h3 className="mb-4 text-lg font-semibold">Completed Puzzle:</h3>
                 <SudokuGrid board={board.board_state} onMove={() => { }} />
             </div>
-            <button onClick={onPlayAgain} className="new-game-btn">Play Again</button>
+            <button onClick={onPlayAgain} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors font-medium text-base sm:text-lg">Play Again</button>
         </div>
     );
 };

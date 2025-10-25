@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import GameScreen from '../components/GameScreen';
 import WinningScreen from '../components/WinningScreen';
 import PuzzleHeader from '../components/PuzzleHeader';
-import './Singleplayer.css';
 
 interface Board {
     id: number;
@@ -128,7 +127,7 @@ const Singleplayer: React.FC = () => {
         81;
 
     return (
-        <div className="sudoku-game-container">
+        <div className="flex flex-col items-center p-3 sm:p-6 max-w-full box-border text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900">
             <PuzzleHeader
                 gameCompleted={gameCompleted}
                 errorCount={errorCount}
@@ -139,7 +138,7 @@ const Singleplayer: React.FC = () => {
                 onGetHint={getHint}
                 onSolveGame={solveGame}
             />
-            {loading && <div className="loading-indicator">Loading game...</div>}
+            {loading && <div className="text-slate-600 dark:text-slate-400 italic mt-2 mb-4">Loading game...</div>}
             {currentBoard && gameCompleted ? (
                 <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
             ) : currentBoard ? (

@@ -23,10 +23,8 @@ const GameScreen: React.FC<GameScreenProps> = ({
     onMove,
 }) => {
     return (
-        <div className="sudoku-grid-wrapper-with-status">
-            <div className="sudoku-grid-wrapper">
-                <SudokuGrid board={board.board_state} onMove={onMove} />
-            </div>
+        <div className="w-full flex justify-center overflow-x-auto">
+            <SudokuGrid board={board.board_state} onMove={onMove} />
         </div>
     );
 };
