@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.boards.schemas import (
+from app.sudoku.schemas import (
     SudokuBoard,
     SudokuBoardCreate,
     SudokuBoardUpdate,
     GameMove,
 )
-from app.boards.service import BoardService
+from app.sudoku.service import BoardService
 
 router = APIRouter()
 
