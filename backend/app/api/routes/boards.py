@@ -134,7 +134,7 @@ async def create_singleplayer_board(
         user = dummy_user
 
     # Generate puzzle
-    board_state = generate_puzzle()
+    board_state = generate_puzzle(difficulty)
 
     # Create board with player1 and player2 as same user (for singleplayer)
     db_board = SudokuBoardModel(
