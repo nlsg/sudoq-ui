@@ -1,4 +1,6 @@
 import React from 'react';
+import HamburgerButton from './HamburgerButton';
+import ThemeToggle from './ThemeToggle';
 
 interface PuzzleHeaderProps {
     gameCompleted: boolean;
@@ -46,6 +48,8 @@ const GameClock: React.FC<{ gameCompleted?: boolean; boardId?: number }> = ({ ga
 };
 
 const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame }) => {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+
     return (
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-200 dark:border-slate-700">
             {/* Top row with stats */}
@@ -61,6 +65,10 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                         </div>
                     )}
                 </div>
+                <HamburgerButton
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    isOpen={isExpanded}
+                />
             </div>
 
             {/* Bottom row with controls */}
@@ -101,6 +109,16 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                     Solve
                 </button>
             </div>
+
+            {/* Expanded settings panel */}
+            {isExpanded && (
+                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Settings:</span>
+                        <ThemeToggle />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
