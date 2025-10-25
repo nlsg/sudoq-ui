@@ -19,29 +19,22 @@ const Singleplayer: React.FC = () => {
     const [board, setBoard] = useState<Board | null>(null);
     const [loading, setLoading] = useState(false);
     const [errorCount, setErrorCount] = useState(0);
+    const [statsVisible, setStatsVisible] = useState(false);
 
     useEffect(() => {
         // For demo, assume user_id=1, load or create singleplayer
-        loadOrCreateBoard(1);
+        createBoard(1);
     }, []);
 
-    const loadOrCreateBoard = async (userId: number, selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
+    const createBoard = async (userId: number, selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
         setLoading(true);
         try {
-            // Try to get existing boards
-            const res = await fetch(`/api/v1/boards?player_id=${userId}&limit=1`);
-            const boards = await res.json();
-            if (boards.length > 0) {
-                setBoard(boards[0]);
-            } else {
-                // Create new
-                const newRes = await fetch(`/api/v1/boards/singleplayer?user_id=${userId}&difficulty=${selectedDifficulty || 'medium'}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                });
-                const newBoard = await newRes.json();
-                setBoard(newBoard);
-            }
+            const newRes = await fetch(`/api/v1/boards/singleplayer?user_id=${userId}&difficulty=${selectedDifficulty || 'medium'}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const newBoard = await newRes.json();
+            setBoard(newBoard);
         } catch (error) {
             console.error('Failed to load board:', error);
         }
@@ -100,7 +93,7 @@ const Singleplayer: React.FC = () => {
     const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | 'expert'>('medium');
 
     const startNewGame = () => {
-        loadOrCreateBoard(1, difficulty);
+        createBoard(1, difficulty);
         setErrorCount(0);
     };
 
@@ -138,6 +131,8 @@ const Singleplayer: React.FC = () => {
                 onStartNewGame={startNewGame}
                 onGetHint={getHint}
                 onSolveGame={solveGame}
+                onToggleStats={() => setStatsVisible(!statsVisible)}
+                statsVisible={statsVisible}
             />
             {currentBoard && gameCompleted ? (
                 <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
@@ -145,6 +140,7 @@ const Singleplayer: React.FC = () => {
                 <GameScreen
                     board={currentBoard}
                     onMove={handleMove}
+                    statsVisible={statsVisible}
                 />
             ) : null}
         </div>

@@ -12,6 +12,8 @@ interface PuzzleHeaderProps {
     onStartNewGame: () => void;
     onGetHint: () => void;
     onSolveGame: () => void;
+    onToggleStats: () => void;
+    statsVisible: boolean;
 }
 
 const GameClock: React.FC<{ gameCompleted?: boolean; boardId?: number }> = ({ gameCompleted = false, boardId }) => {
@@ -47,7 +49,7 @@ const GameClock: React.FC<{ gameCompleted?: boolean; boardId?: number }> = ({ ga
     return <div className="game-clock text-slate-900 dark:text-slate-100">Time: {formatTime(time)}</div>;
 };
 
-const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame }) => {
+const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame, onToggleStats, statsVisible }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     return (
@@ -65,10 +67,21 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                         </div>
                     )}
                 </div>
-                <HamburgerButton
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    isOpen={isExpanded}
-                />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={onToggleStats}
+                        title={statsVisible ? "Hide Stats" : "Show Stats"}
+                        className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={statsVisible ? "text-blue-600" : "text-slate-600 dark:text-slate-400"}>
+                            <path d="M3 3v18h18M7.5 12h9 l-2 3M6 9h1.5M13.5 6v3M9 12v2.5M12 6v2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <HamburgerButton
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        isOpen={isExpanded}
+                    />
+                </div>
             </div>
 
             {/* Bottom row with controls */}
