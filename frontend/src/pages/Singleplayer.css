@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
+    padding: 1.5rem;
     max-width: 100vw;
     box-sizing: border-box;
     color: var(--text-color, black);
@@ -26,16 +26,50 @@
     color: #ffffff;
 }
 
-.game-clock {
+.puzzle-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.puzzle-header h2 {
     font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.header-bottom {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.puzzle-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.game-clock {
+    font-size: 2rem;
     font-weight: bold;
-    margin: 1rem 0;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.error-counter {
+    font-size: 1.5rem;
+    margin-left: 1rem;
 }
 
 .game-controls {
     display: flex;
-    gap: 0.5rem;
-    margin: 1rem 0;
+    gap: 1rem;
+    margin: 2rem 0;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -78,8 +112,8 @@
 }
 
 .game-controls button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.2rem;
     cursor: pointer;
 }
 

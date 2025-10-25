@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
+import { Outlet } from 'react-router-dom';
 import HamburgerButton from './HamburgerButton';
 import Sidebar from './Sidebar';
 import './Layout.css';
@@ -23,19 +22,21 @@ const Layout: React.FC = () => {
                 borderBottom: '1px solid var(--border-color)',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'var(--background-color)',
+                zIndex: 1000,
+                width: '100%'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <HamburgerButton onClick={toggleSidebar} isOpen={isSidebarOpen} />
-                    <nav className="desktop-nav">
-                        <Link to="/" style={{ marginLeft: '1rem', marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>Home</Link>
-                        <Link to="/boards" style={{ textDecoration: 'none', color: 'inherit' }}>Boards</Link>
-                    </nav>
                 </div>
-                <ThemeToggle />
             </header>
             <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-            <main style={{ flex: 1, padding: '2rem' }}>
+            <main style={{ flex: 1, padding: '2rem', paddingTop: '6rem' }}>
                 <Outlet />
             </main>
             <footer style={{

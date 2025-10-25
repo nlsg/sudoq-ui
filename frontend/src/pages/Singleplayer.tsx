@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import GameScreen from '../components/GameScreen';
 import WinningScreen from '../components/WinningScreen';
-import './Boards.css';
+import PuzzleHeader from '../components/PuzzleHeader';
+import './Singleplayer.css';
 
 interface Board {
     id: number;
@@ -15,37 +16,10 @@ interface Board {
     updated_at: string;
 }
 
-const GameClock: React.FC<{ gameCompleted?: boolean }> = ({ gameCompleted = false }) => {
-    const [time, setTime] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
-
-    useEffect(() => {
-        let interval: number;
-        if (isRunning && !gameCompleted) {
-            interval = setInterval(() => {
-                setTime(prevTime => prevTime + 1);
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [isRunning, gameCompleted]);
-
-    useEffect(() => {
-        setIsRunning(true); // Start clock when component mounts
-        return () => setIsRunning(false);
-    }, []);
-
-    const formatTime = (seconds: number) => {
-        const minutes = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-    };
-
-    return <div className="game-clock">Time: {formatTime(time)}</div>;
-};
-
-const Boards: React.FC = () => {
+const Singleplayer: React.FC = () => {
     const [board, setBoard] = useState<Board | null>(null);
     const [loading, setLoading] = useState(false);
+    const [errorCount, setErrorCount] = useState(0);
 
     useEffect(() => {
         // For demo, assume user_id=1, load or create singleplayer
@@ -87,7 +61,7 @@ const Boards: React.FC = () => {
                 const updatedBoard = await res.json();
                 setBoard(updatedBoard);
             } else {
-                alert('Invalid move');
+                setErrorCount(prev => prev + 1);
             }
         } catch (error) {
             console.error('Move failed:', error);
@@ -100,7 +74,7 @@ const Boards: React.FC = () => {
             const res = await fetch(`/api/v1/boards/${board.id}/hint`);
             if (res.ok) {
                 const hint = await res.json();
-                alert(`Hint: Row ${hint.row + 1}, Col ${hint.col + 1}, Value ${hint.value}`);
+                handleMove(hint.row, hint.col, hint.value);
             } else {
                 alert('No hint available');
             }
@@ -128,6 +102,7 @@ const Boards: React.FC = () => {
 
     const startNewGame = () => {
         loadOrCreateBoard(1, difficulty);
+        setErrorCount(0);
     };
 
     const createLoadingBoard = (): Board => ({
@@ -147,21 +122,29 @@ const Boards: React.FC = () => {
 
     const gameCompleted = currentBoard ? currentBoard.status === 'completed' : false;
 
+    // Calculate remaining cells
+    const remainingCells = currentBoard ?
+        81 - currentBoard.board_state.split('').filter(char => char !== '0').length :
+        81;
+
     return (
         <div className="sudoku-game-container">
-            <h1>Sudoku Singleplayer</h1>
+            <PuzzleHeader
+                gameCompleted={gameCompleted}
+                errorCount={errorCount}
+                difficulty={difficulty}
+                remainingCells={remainingCells}
+                onDifficultyChange={setDifficulty}
+                onStartNewGame={startNewGame}
+                onGetHint={getHint}
+                onSolveGame={solveGame}
+            />
             {loading && <div className="loading-indicator">Loading game...</div>}
-            <GameClock gameCompleted={gameCompleted} />
             {currentBoard && gameCompleted ? (
                 <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
             ) : currentBoard ? (
                 <GameScreen
                     board={currentBoard}
-                    difficulty={difficulty}
-                    onDifficultyChange={setDifficulty}
-                    onStartNewGame={startNewGame}
-                    onGetHint={getHint}
-                    onSolveGame={solveGame}
                     onMove={handleMove}
                 />
             ) : null}
@@ -169,4 +152,4 @@ const Boards: React.FC = () => {
     );
 };
 
-export default Boards;
+export default Singleplayer;

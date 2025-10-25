@@ -13,7 +13,11 @@ const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly }) =>
         onChange(newValue);
     };
 
-    return (
+    return readonly ? (
+        <div className={`sudoku-cell ${readonly ? 'readonly' : ''}`}>
+            {value || ''}
+        </div>
+    ) : (
         <select
             className={`sudoku-cell ${readonly ? 'readonly' : ''}`}
             value={value === null ? '' : value}

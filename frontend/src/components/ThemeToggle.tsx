@@ -1,4 +1,5 @@
 import React from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../ThemeContext';
 
 const ThemeToggle: React.FC = () => {
@@ -11,13 +12,16 @@ const ThemeToggle: React.FC = () => {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '1.5rem',
                 padding: '0.5rem',
                 borderRadius: '4px',
+                color: 'var(--text-color)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
             aria-label="Toggle theme"
         >
-            {theme === 'dark' ? '🌙' : '☀️'}
+            {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
         </button>
     );
 };

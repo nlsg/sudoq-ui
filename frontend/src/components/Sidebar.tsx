@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -18,8 +19,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </div>
                 <nav className="sidebar-nav">
                     <Link to="/" onClick={onClose}>Home</Link>
-                    <Link to="/boards" onClick={onClose}>Sudoku Game</Link>
+                    <Link to="/singleplayer" onClick={onClose}>Singleplayer</Link>
                 </nav>
+                <div className="sidebar-footer">
+                    <ThemeToggle />
+                </div>
             </div>
         </>
     );
