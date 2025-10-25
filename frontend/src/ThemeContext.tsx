@@ -18,11 +18,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const [theme, setTheme] = useState<Theme>('dark');
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        const root = document.getElementById('root');
-        if (root) {
-            root.className = theme;
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
+        document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 
     const toggleTheme = () => {

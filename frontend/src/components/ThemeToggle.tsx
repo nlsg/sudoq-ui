@@ -8,20 +8,14 @@ const ThemeToggle: React.FC = () => {
     return (
         <button
             onClick={toggleTheme}
-            style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                color: 'var(--text-color)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
+            className="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400"
             aria-label="Toggle theme"
         >
-            {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+            {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+            ) : (
+                <Moon className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+            )}
         </button>
     );
 };

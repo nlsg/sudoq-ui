@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import SudokuCell from './SudokuCell';
-import './SudokuGrid.css';
 
 interface SudokuGridProps {
     board: string; // 81-character string
@@ -31,11 +30,11 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
 
 
     return (
-        <div className="sudoku-grid-container">
+        <div className="inline-flex flex-col border-4 border-slate-800 bg-white shadow-2xl rounded-lg overflow-hidden">
             {grid.map((row, r) => (
-                <div key={r} className={`sudoku-row ${r % 3 === 2 && r < 8 ? 'thick-border-bottom' : ''}`}>
+                <div key={r} className={`flex ${r % 3 === 2 && r < 8 ? 'border-b-4 border-slate-800' : ''}`}>
                     {row.map((cell, c) => (
-                        <div key={c} className={`sudoku-cell-container ${c % 3 === 2 && c < 8 ? 'thick-border-right' : ''}`}>
+                        <div key={c} className={`${c % 3 === 2 && c < 8 ? 'border-r-4 border-slate-800' : ''}`}>
                             <SudokuCell
                                 value={cell}
                                 onChange={(value) => handleCellChange(r, c, value)}

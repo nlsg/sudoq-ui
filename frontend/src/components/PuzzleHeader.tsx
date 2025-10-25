@@ -36,27 +36,38 @@ const GameClock: React.FC<{ gameCompleted?: boolean }> = ({ gameCompleted = fals
         return `${minutes.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     };
 
-    return <div className="game-clock">Time: {formatTime(time)}</div>;
+    return <div className="game-clock text-slate-900 dark:text-slate-100">Time: {formatTime(time)}</div>;
 };
 
 const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame }) => {
     return (
-        <div className="puzzle-header">
-            <div className="header-bottom">
-                <GameClock gameCompleted={gameCompleted} />
-                <div className="error-counter">Errors: {errorCount}</div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-200 dark:border-slate-700">
+            {/* Top row with stats */}
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-6">
+                    <GameClock gameCompleted={gameCompleted} />
+                    <div className="text-sm text-red-600 font-semibold">
+                        Errors: {errorCount}
+                    </div>
+                    {remainingCells !== undefined && (
+                        <div className="text-sm text-blue-600 font-semibold">
+                            Empty: {remainingCells}
+                        </div>
+                    )}
+                </div>
             </div>
-            <div className="header-bottom">
-                {remainingCells !== undefined && <div className="remaining-cells">Remaining Cells: {remainingCells}</div>}
-            </div>
-            <div className="game-controls">
-                <div className="difficulty-selector">
-                    <label htmlFor="difficulty-select" title="Select game difficulty"></label>
+
+            {/* Bottom row with controls */}
+            <div className="flex flex-wrap gap-3 items-center">
+                <div className="flex items-center gap-2">
+                    <label htmlFor="difficulty-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Difficulty:
+                    </label>
                     <select
                         id="difficulty-select"
                         value={difficulty}
                         onChange={(e) => onDifficultyChange(e.target.value as 'easy' | 'medium' | 'hard' | 'expert')}
-                        title="Select game difficulty"
+                        className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="easy">Easy</option>
                         <option value="medium">Medium</option>
@@ -64,9 +75,25 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                         <option value="expert">Expert</option>
                     </select>
                 </div>
-                <button onClick={onStartNewGame}>New Game</button>
-                <button onClick={onGetHint}>Hint</button>
-                <button onClick={onSolveGame}>Solve</button>
+
+                <button
+                    onClick={onStartNewGame}
+                    className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium text-sm"
+                >
+                    New Game
+                </button>
+                <button
+                    onClick={onGetHint}
+                    className="px-4 py-1.5 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors font-medium text-sm"
+                >
+                    Hint
+                </button>
+                <button
+                    onClick={onSolveGame}
+                    className="px-4 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors font-medium text-sm"
+                >
+                    Solve
+                </button>
             </div>
         </div>
     );

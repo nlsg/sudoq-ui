@@ -15,14 +15,13 @@
     margin: 0.5rem 0;
 }
 
-/* Dark theme colors */
-[data-theme="dark"] .sudoku-game-container,
-.light .sudoku-game-container {
+/* Theme colors */
+[data-theme="light"] .sudoku-game-container {
     color: #000000;
 }
 
-.dark .sudoku-game-container,
-[data-theme="light"] .sudoku-game-container {
+[data-theme="dark"] .sudoku-game-container,
+.dark .sudoku-game-container {
     color: #ffffff;
 }
 
