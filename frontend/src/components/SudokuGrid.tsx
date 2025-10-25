@@ -14,9 +14,15 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
     const wheelHideTimeoutRef = useRef<number | null>(null);
     const [gridPosition, setGridPosition] = useState({ x: 0, y: 0 });
 
-    const handleCellClick = (row: number, col: number) => {
-        if (grid[row][col] !== null) return; // only for empty cells
-        setActiveCell(activeCell?.row === row && activeCell?.col === col ? null : { row, col });
+    const handleCellClick = (row: number, col: number, event?: React.MouseEvent) => {
+        // Hide wheel for filled cells or clicks on non-active empty cells
+        if (grid[row][col] !== null || (activeCell && (activeCell.row !== row || activeCell.col !== col))) {
+            setActiveCell(null);
+            return;
+        }
+        // For the active empty cell, prevent propagation to avoid hiding the wheel
+        event?.stopPropagation();
+        setActiveCell({ row, col });
     };
 
     useEffect(() => {
@@ -44,6 +50,18 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
         if (gridRef.current && activeCell) {
             const rect = gridRef.current.getBoundingClientRect();
             setGridPosition({ x: rect.left, y: rect.top });
+        }
+    }, [activeCell]);
+
+    // Hide wheel when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setActiveCell(null);
+        };
+
+        if (activeCell) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [activeCell]);
 
@@ -96,7 +114,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
                                     onChange={(value) => handleCellChange(r, c, value)}
                                     readonly={cell !== null}
                                     isActive={activeCell?.row === r && activeCell?.col === c}
-                                    onClick={() => handleCellClick(r, c)}
+                                    onClick={(event) => handleCellClick(r, c, event)}
                                 />
                             </div>
                         ))}
@@ -112,6 +130,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
                         left: `${calculateCellPosition(activeCell.row, activeCell.col).x + cellWidth / 2}px`,
                         top: `${calculateCellPosition(activeCell.row, activeCell.col).y + cellHeight / 2}px`,
                     }}
+                    onClick={(e) => e.stopPropagation()}
                     onMouseEnter={() => {
                         // Clear any pending hide timeout when entering the wheel area
                         if (wheelHideTimeoutRef.current) {

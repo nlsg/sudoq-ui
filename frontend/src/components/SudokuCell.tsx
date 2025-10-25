@@ -5,7 +5,7 @@ interface SudokuCellProps {
     onChange: (value: number) => void;
     readonly: boolean;
     isActive: boolean;
-    onClick: () => void;
+    onClick: (event?: React.MouseEvent) => void;
 }
 
 const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isActive, onClick }) => {
