@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from app.boards.models import SudokuBoard as SudokuBoardModel
 from app.users.models import User
-from app.core.sudoku import (
+from app.boards.core import (
     generate_puzzle,
     is_solved,
     make_move,

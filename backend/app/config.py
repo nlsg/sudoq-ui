@@ -4,7 +4,6 @@ from typing import Annotated, Any, Literal
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    PostgresDsn,
     computed_field,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,9 +24,12 @@ class Settings(BaseSettings):
         env_ignore_empty=True,
         extra="ignore",
     )
+    # sudoku
+    MAX_GENERATION_TRIES: int = 5
+
+    # deployment
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"

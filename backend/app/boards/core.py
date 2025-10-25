@@ -1,11 +1,15 @@
 import random
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple, Literal
 from sudoq import Grid
-from sudoq.generators import PuzzleGenerator, RandomCellReducer
-from sudoq.core import Position
+from sudoq.generators import PuzzleGenerator, RandomCellReducer, DigitReducer
+from sudoq import reducers
+
+from app.config import settings
+
+type Difficulty = Literal["easy", "medium", "hard"]
 
 
-def generate_puzzle(difficulty: str = "medium") -> str:
+def generate_puzzle(difficulty: Difficulty = "medium") -> str:
     """Generate a Sudoku puzzle and return as string.
 
     Difficulty controls min_clues:
@@ -15,19 +19,41 @@ def generate_puzzle(difficulty: str = "medium") -> str:
     - expert: 25-30 clues
     """
     if difficulty == "easy":
-        min_clues = 50
+        generator = PuzzleGenerator(reducers=[RandomCellReducer()], min_clues=25)
     elif difficulty == "medium":
-        min_clues = 45
+        generator = PuzzleGenerator(reducers=[RandomCellReducer()], min_clues=0)
     elif difficulty == "hard":
-        min_clues = 35
+        generator = PuzzleGenerator(
+            reducers=[
+                DigitReducer(random.choice(range(1, 10))),
+                RandomCellReducer(),
+            ],
+        )
     elif difficulty == "expert":
-        min_clues = 25
-    else:
-        min_clues = 45  # default medium
+        generator = PuzzleGenerator(
+            max_clues=0,
+            reducers=[
+                reducers.SequentialReducer(
+                    [
+                        DigitReducer(random.choice(range(1, 10)), 0),
+                        reducers.CompositeReducer(
+                            [
+                                DigitReducer(random.choice(range(1, 5)), 0),
+                                DigitReducer(random.choice(range(1, 5))),
+                                DigitReducer(random.choice(range(5, 10)), 0),
+                                DigitReducer(random.choice(range(5, 10))),
+                            ]
+                        ),
+                        reducers.RandomCellReducer(),
+                        # reducers.RandomCellReducer()
+                    ]
+                )
+            ],
+        )
 
-    gen = PuzzleGenerator(reducers=[RandomCellReducer()], min_clues=min_clues)
-    puzzle = gen.generate()
-    return grid_to_str(puzzle)
+    else:
+        raise ValueError("unknown difficulty")
+    return generator.generate(tries=settings.MAX_GENERATION_TRIES).to_string()
 
 
 def parse_grid(board_str: str) -> Grid:
