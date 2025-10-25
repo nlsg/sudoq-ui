@@ -10,7 +10,6 @@ from app.database import create_tables
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup
     await create_tables()
     yield
 
