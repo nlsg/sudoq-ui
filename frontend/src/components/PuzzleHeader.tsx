@@ -51,7 +51,7 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-200 dark:border-slate-700">
+        <div className="flex flex-col w-[360px] sm:w-[432px] md:w-[504px] bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-200 dark:border-slate-700">
             {/* Top row with stats */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-6">
@@ -73,29 +73,6 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
 
             {/* Bottom row with controls */}
             <div className="flex flex-wrap gap-3 items-center">
-                <div className="flex items-center gap-2">
-                    <label htmlFor="difficulty-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Difficulty:
-                    </label>
-                    <select
-                        id="difficulty-select"
-                        value={difficulty}
-                        onChange={(e) => onDifficultyChange(e.target.value as 'easy' | 'medium' | 'hard' | 'expert')}
-                        className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                        <option value="expert">Expert</option>
-                    </select>
-                </div>
-
-                <button
-                    onClick={onStartNewGame}
-                    className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium text-sm"
-                >
-                    New Game
-                </button>
                 <button
                     onClick={onGetHint}
                     className="px-4 py-1.5 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors font-medium text-sm"
@@ -113,9 +90,33 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
             {/* Expanded settings panel */}
             {isExpanded && (
                 <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Settings:</span>
-                        <ThemeToggle />
+                    <div className="flex flex-wrap gap-4 items-center">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Theme:</span>
+                            <ThemeToggle />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <label htmlFor="difficulty-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Difficulty:
+                            </label>
+                            <select
+                                id="difficulty-select"
+                                value={difficulty}
+                                onChange={(e) => onDifficultyChange(e.target.value as 'easy' | 'medium' | 'hard' | 'expert')}
+                                className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        <button
+                            onClick={onStartNewGame}
+                            className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium text-sm"
+                        >
+                            New Game
+                        </button>
                     </div>
                 </div>
             )}
