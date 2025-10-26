@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useGameSettings } from '../GameSettingsContext';
+import { useUser } from '../UserContext';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -10,6 +11,20 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const { settings, toggleAutoMarkCandidates } = useGameSettings();
+    const { user } = useUser();
+
+    const getAvatarColor = (username: string) => {
+        let hash = 0;
+        for (let i = 0; i < username.length; i++) {
+            hash = username.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash % 360);
+        return `hsl(${hue}, 70%, 50%)`;
+    };
+
+    const getInitials = (username: string) => {
+        return username.charAt(0).toUpperCase();
+    };
 
     return (
         <>
@@ -54,6 +69,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         Singleplayer
                     </Link>
                 </nav>
+
+                {/* User Account */}
+                {user && (
+                    <div className="p-4 border-t border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700">
+                        <div className="flex items-center space-x-3">
+                            <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                                style={{ backgroundColor: getAvatarColor(user.username) }}
+                            >
+                                {getInitials(user.username)}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.username}</span>
+                                <span className="text-xs text-slate-500 dark:text-slate-400">Guest User</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Settings */}
                 <div className="p-6 border-t border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 space-y-4">

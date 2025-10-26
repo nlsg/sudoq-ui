@@ -1,3 +1,5 @@
+import random
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.users.models import User as UserModel
@@ -7,16 +9,45 @@ class UserService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+        # For guest usernames
+        self.adjectives = [
+            "Cool",
+            "Funny",
+            "Smart",
+            "Quick",
+            "Happy",
+            "Lucky",
+            "Swift",
+            "Bold",
+            "Jolly",
+            "Proud",
+        ]
+        self.nouns = [
+            "Panda",
+            "Eagle",
+            "Tiger",
+            "Fox",
+            "Wolf",
+            "Lion",
+            "Bear",
+            "Shark",
+            "Owl",
+            "Hawk",
+        ]
+
     async def get_user_by_email(self, email: str):
         result = await self.db.execute(
             select(UserModel).where(UserModel.email == email)
         )
         return result.scalar_one_or_none()
 
-    async def create_user(self, username: str, email: str, password: str):
-        existing = await self.get_user_by_email(email)
-        if existing:
-            raise ValueError("Email already registered")
+    async def create_user(
+        self, username: str, email: Optional[str] = None, password: Optional[str] = None
+    ):
+        if email:
+            existing = await self.get_user_by_email(email)
+            if existing:
+                raise ValueError("Email already registered")
         db_user = UserModel(
             username=username,
             email=email,
@@ -34,6 +65,20 @@ class UserService:
     async def get_users(self, skip: int = 0, limit: int = 100):
         result = await self.db.execute(select(UserModel).offset(skip).limit(limit))
         return result.scalars().all()
+
+    async def create_guest(self):
+        while True:
+            adjective = random.choice(self.adjectives)
+            noun = random.choice(self.nouns)
+            username = f"{adjective}{noun}"
+            # Check if username is unique
+            result = await self.db.execute(
+                select(UserModel).where(UserModel.username == username)
+            )
+            existing = result.scalar_one_or_none()
+            if not existing:
+                break
+        return await self.create_user(username=username)
 
     async def update_user(self, user_id: int, update_data: dict):
         user = await self.get_user(user_id)

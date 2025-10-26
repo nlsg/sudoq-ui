@@ -57,3 +57,9 @@ async def delete_user(user_id: int, service: UserService = Depends(get_user_serv
     if not success:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted"}
+
+
+@router.post("/guest", response_model=User)
+async def create_guest(service: UserService = Depends(get_user_service)):
+    db_user = await service.create_guest()
+    return db_user

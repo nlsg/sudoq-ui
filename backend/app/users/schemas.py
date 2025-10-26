@@ -5,12 +5,12 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
+    email: Optional[EmailStr] = None
     is_active: bool = True
 
 
 class UserCreate(UserBase):
-    password: str
+    password: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
