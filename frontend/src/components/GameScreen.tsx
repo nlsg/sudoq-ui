@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import SudokuGrid from './SudokuGrid';
-import StatsPane from './StatsPane';
 import { useGameSettings } from '../contexts/GameSettingsContext';
 
 interface Board {
@@ -18,14 +17,12 @@ interface Board {
 interface GameScreenProps {
     board: Board;
     onMove: (row: number, col: number, value: number) => void;
-    statsVisible: boolean;
     hint?: any;
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({
     board,
     onMove,
-    statsVisible,
     hint,
 }) => {
     const { settings } = useGameSettings();
@@ -45,11 +42,6 @@ const GameScreen: React.FC<GameScreenProps> = ({
     return (
         <div className="w-full flex justify-center overflow-x-auto gap-4 md:flex-row flex-col items-center">
             <SudokuGrid board={board.board_state} onMove={onMove} candidates={candidates} hint={hint} />
-            {statsVisible && (
-                <StatsPane
-                    board={board.board_state}
-                />
-            )}
         </div>
     );
 };

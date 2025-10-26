@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import GameScreen from '../components/GameScreen';
 import WinningScreen from '../components/WinningScreen';
 import PuzzleHeader from '../components/PuzzleHeader';
+import StatsPane from '../components/StatsPane';
+import Hint from '../components/Hint';
 
 interface Board {
     id: number;
@@ -14,7 +16,6 @@ interface Board {
     created_at: string;
     updated_at: string;
 }
-
 const Singleplayer: React.FC = () => {
     const [board, setBoard] = useState<Board | null>(null);
     const [loading, setLoading] = useState(false);
@@ -134,34 +135,52 @@ const Singleplayer: React.FC = () => {
         81;
 
     return (
-        <div className="flex flex-col items-center p-3 sm:p-6 max-w-full box-border text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900">
-            <PuzzleHeader
-                gameCompleted={gameCompleted}
-                errorCount={errorCount}
-                difficulty={difficulty}
-                remainingCells={remainingCells}
-                boardId={currentBoard!.id}
-                onDifficultyChange={setDifficulty}
-                onStartNewGame={startNewGame}
-                onGetHint={getHint}
-                onSolveGame={solveGame}
-                onToggleStats={() => setStatsVisible(!statsVisible)}
-                statsVisible={statsVisible}
-                hint={currentHint}
-                onApplyHint={applyHint}
-                onDismissHint={dismissHint}
-            />
-            {currentBoard && gameCompleted ? (
-                <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
-            ) : currentBoard ? (
-                <GameScreen
-                    board={currentBoard}
-                    onMove={handleMove}
-                    statsVisible={statsVisible}
-                    hint={currentHint}
-                />
-            ) : null}
-        </div>
+        <>
+            <div className="flex flex-row items-start justify-center w-full p-3 sm:p-6 max-w-full box-border text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900">
+                <div className="flex flex-col items-center w-full">
+                    <PuzzleHeader
+                        gameCompleted={gameCompleted}
+                        errorCount={errorCount}
+                        difficulty={difficulty}
+                        remainingCells={remainingCells}
+                        boardId={currentBoard!.id}
+                        onDifficultyChange={setDifficulty}
+                        onStartNewGame={startNewGame}
+                        onGetHint={getHint}
+                        onSolveGame={solveGame}
+                        onToggleStats={() => setStatsVisible(!statsVisible)}
+                        statsVisible={statsVisible}
+                        hint={currentHint}
+                        onApplyHint={applyHint}
+                        onDismissHint={dismissHint}
+                    />
+
+                    {currentBoard && gameCompleted ? (
+                        <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
+                    ) : currentBoard ? (
+                        <GameScreen
+                            board={currentBoard}
+                            onMove={handleMove}
+                            hint={currentHint}
+                        />
+                    ) : null}
+                    {/* Hint display */}
+                    {currentHint && (
+                        <Hint
+                            onApplyHint={applyHint}
+                            onDismissHint={dismissHint}
+                            hint={currentHint}
+                        />
+                    )}
+                </div>
+                {statsVisible && currentBoard && (
+                    <div className="mr-6">
+                        <StatsPane board={currentBoard.board_state} />
+                    </div>
+                )}
+
+            </div>
+        </>
     );
 };
 
