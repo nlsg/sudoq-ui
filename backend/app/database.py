@@ -17,7 +17,7 @@ Base = declarative_base()
 
 
 # Import models to register them
-from app.db import User, SudokuBoard  # ignore: F401
+from app.db import User, SudokuGame  # ignore: F401
 
 
 # Dependency for FastAPI

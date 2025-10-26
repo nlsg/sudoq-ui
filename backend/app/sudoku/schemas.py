@@ -3,30 +3,25 @@ from typing import Optional, List
 from datetime import datetime
 
 
-class SudokuBoardBase(BaseModel):
+class SudokuGameBase(BaseModel):
     board_state: str
+    mistakes_p1: int
+    mistakes_p2: int
+    valid_moves_p1: int
+    valid_moves_p2: int
 
 
-class SudokuBoardCreate(SudokuBoardBase):
+class SudokuGameCreate(SudokuGameBase):
     player1_id: int
-    player2_id: int
-    current_player_id: int
+    player2_id: Optional[int] = None
+    difficulty: Optional[str] = None
 
 
-class SudokuBoardUpdate(BaseModel):
-    board_state: Optional[str] = None
-    current_player_id: Optional[int] = None
-    status: Optional[str] = None
-    winner_id: Optional[int] = None
-
-
-class SudokuBoardInDBBase(SudokuBoardBase):
+class SudokuGameInDBBase(SudokuGameBase):
     id: int
     player1_id: int
-    player2_id: int
-    current_player_id: int
-    status: str
-    winner_id: Optional[int] = None
+    player2_id: Optional[int] = None
+    difficulty: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -34,11 +29,11 @@ class SudokuBoardInDBBase(SudokuBoardBase):
         from_attributes = True
 
 
-class SudokuBoard(SudokuBoardInDBBase):
+class SudokuGame(SudokuGameInDBBase):
     pass
 
 
-class SudokuBoardInDB(SudokuBoardInDBBase):
+class SudokuGameInDB(SudokuGameInDBBase):
     pass
 
 
@@ -49,6 +44,7 @@ class GameChallenge(BaseModel):
 
 # Schema for making a move
 class GameMove(BaseModel):
+    player_id: int
     row: int
     col: int
     value: int

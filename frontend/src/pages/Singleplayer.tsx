@@ -50,7 +50,7 @@ const Singleplayer: React.FC = () => {
             const res = await fetch(`/api/v1/boards/${board.id}/move`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ row, col, value }),
+                body: JSON.stringify({ player_id: 1, row, col, value }),
             });
             if (res.ok) {
                 const updatedBoard = await res.json();

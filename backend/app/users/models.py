@@ -17,9 +17,9 @@ class User(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
-    boards_as_player1 = relationship(
-        "SudokuBoard", back_populates="player1", foreign_keys="SudokuBoard.player1_id"
+    games_as_player1 = relationship(
+        "SudokuGame", back_populates="player1", foreign_keys="SudokuGame.player1_id"
     )
-    boards_as_player2 = relationship(
-        "SudokuBoard", back_populates="player2", foreign_keys="SudokuBoard.player2_id"
+    games_as_player2 = relationship(
+        "SudokuGame", back_populates="player2", foreign_keys="SudokuGame.player2_id"
     )
