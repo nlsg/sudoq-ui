@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SudokuGrid from './SudokuGrid';
 import StatsPane from './StatsPane';
-import { useGameSettings } from '../GameSettingsContext';
+import { useGameSettings } from '../contexts/GameSettingsContext';
 
 interface Board {
     id: number;

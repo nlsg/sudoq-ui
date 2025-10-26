@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './ThemeContext';
-import { GameSettingsProvider } from './GameSettingsContext';
-import { UserProvider } from './UserContext';
+import { GameSettingsProvider } from './contexts/GameSettingsContext';
+import { UserProvider } from './contexts/UserContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Singleplayer from './pages/Singleplayer';

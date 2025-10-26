@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
-import { useGameSettings } from '../GameSettingsContext';
-import { useUser } from '../UserContext';
+import { useGameSettings } from '../contexts/GameSettingsContext';
+import { useUser } from '../contexts/UserContext';
 
 interface SidebarProps {
     isOpen: boolean;
