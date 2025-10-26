@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Tuple, Literal
+from typing import Optional, Tuple, Literal, List
 from sudoq import Grid, reducers, Cell
 from sudoq.generators import PuzzleGenerator, RandomCellReducer, DigitReducer
 from sudoq.solvers import BacktrackingSolver
@@ -129,3 +129,21 @@ def get_hint(board_str: str) -> Optional[Tuple[int, int, int]]:
         return (r, c, value)
     except ValueError:
         return None
+
+
+def get_candidates_all(board_str: str) -> List[List[List[int]]]:
+    """Return all candidates as 9x9 list of lists of int."""
+    try:
+        grid = Grid.from_string(board_str)
+        candidates = []
+        for r in range(9):
+            row = []
+            for c in range(9):
+                if grid.get_cell((r, c)) != 0:
+                    row.append([])
+                else:
+                    row.append(list(grid.get_candidates((r, c))))
+            candidates.append(row)
+        return candidates
+    except ValueError:
+        return [[[0]]]

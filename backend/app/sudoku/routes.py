@@ -121,3 +121,14 @@ async def solve_board(
         return solution
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/{board_id}/candidates")
+async def get_candidates(
+    board_id: int, service: BoardService = Depends(get_board_service)
+):
+    try:
+        candidates = await service.get_candidates(board_id)
+        return candidates
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

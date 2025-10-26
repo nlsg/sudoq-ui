@@ -5,9 +5,10 @@ import SudokuCell from './SudokuCell';
 interface SudokuGridProps {
     board: string; // 81-character string
     onMove: (row: number, col: number, value: number) => void;
+    candidates?: number[][][];
 }
 
-const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
+const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates }) => {
     const [grid, setGrid] = useState<(number | null)[][]>([]);
     const [activeCell, setActiveCell] = useState<{ row: number, col: number } | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -115,6 +116,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove }) => {
                                     readonly={cell !== null}
                                     isActive={activeCell?.row === r && activeCell?.col === c}
                                     onClick={(event) => handleCellClick(r, c, event)}
+                                    candidates={candidates?.[r]?.[c] || []}
                                 />
                             </div>
                         ))}

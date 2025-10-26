@@ -8,6 +8,7 @@ from app.sudoku.core import (
     make_move,
     get_hint,
     get_solution,
+    get_candidates_all,
 )
 
 
@@ -148,3 +149,11 @@ class BoardService:
             raise ValueError("Board is not solvable")
 
         return {"solution": solution}
+
+    async def get_candidates(self, board_id: int):
+        db_board = await self.get_board(board_id)
+        if not db_board:
+            raise ValueError("Board not found")
+
+        candidates = get_candidates_all(db_board.board_state)
+        return {"candidates": candidates}

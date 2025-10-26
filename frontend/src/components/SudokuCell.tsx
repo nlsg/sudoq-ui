@@ -6,9 +6,10 @@ interface SudokuCellProps {
     readonly: boolean;
     isActive: boolean;
     onClick: (event?: React.MouseEvent) => void;
+    candidates: number[];
 }
 
-const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isActive, onClick }) => {
+const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isActive, onClick, candidates }) => {
     const handleDigitClick = (digit: number) => {
         onChange(digit);
     };
@@ -35,7 +36,7 @@ const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isAc
 
     return (
         <div
-            className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 border border-slate-300 cursor-pointer font-mono text-lg sm:text-xl ${readonly
+            className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 border border-slate-300 cursor-pointer font-mono text-lg sm:text-xl relative ${readonly
                 ? 'bg-slate-50 font-bold text-slate-900'
                 : 'bg-white text-slate-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500'
                 } transition-colors`}
@@ -44,7 +45,16 @@ const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isAc
             tabIndex={readonly ? undefined : 0}
             title="Select a number"
         >
-            {value || ''}
+            {value ? value : null}
+            {!value && candidates.length > 0 && (
+                <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[8px] sm:text-[10px] md:text-[12px] text-slate-600 pointer-events-none">
+                    {Array.from({ length: 9 }, (_, i) => (
+                        <div key={i} className="flex items-center justify-center">
+                            {candidates.includes(i + 1) ? i + 1 : ''}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

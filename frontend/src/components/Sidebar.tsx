@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import { useGameSettings } from '../GameSettingsContext';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -8,6 +9,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+    const { settings, toggleAutoMarkCandidates } = useGameSettings();
+
     return (
         <>
             {/* Mobile backdrop overlay */}
@@ -52,11 +55,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     </Link>
                 </nav>
 
-                {/* Theme toggle */}
-                <div className="p-6 border-t border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700">
+                {/* Settings */}
+                <div className="p-6 border-t border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 space-y-4">
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Theme</span>
                         <ThemeToggle />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Auto-mark candidates</span>
+                        <button
+                            onClick={toggleAutoMarkCandidates}
+                            className={`relative inline-block w-11 h-6 rounded-full transition-colors duration-200 ${settings.autoMarkCandidates ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'}`}
+                            aria-label={`Toggle auto-mark candidates ${settings.autoMarkCandidates ? 'off' : 'on'}`}
+                        >
+                            <span
+                                className={`absolute top-1 left-1 inline-block w-4 h-4 bg-white rounded-full transition-transform duration-200 ${settings.autoMarkCandidates ? 'translate-x-5' : 'translate-x-0'}`}
+                            />
+                        </button>
                     </div>
                 </div>
             </div>
