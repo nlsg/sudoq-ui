@@ -137,7 +137,7 @@ class BoardService:
         if hint is None:
             raise ValueError("No hint available")
 
-        return {"row": hint[0], "col": hint[1], "value": hint[2]}
+        return hint
 
     async def solve_board(self, board_id: int):
         db_board = await self.get_board(board_id)

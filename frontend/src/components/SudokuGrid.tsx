@@ -6,9 +6,10 @@ interface SudokuGridProps {
     board: string; // 81-character string
     onMove: (row: number, col: number, value: number) => void;
     candidates?: number[][][];
+    hint?: any;
 }
 
-const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates }) => {
+const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint }) => {
     const [grid, setGrid] = useState<(number | null)[][]>([]);
     const [activeCell, setActiveCell] = useState<{ row: number, col: number } | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -103,6 +104,25 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates }) =>
         return { x, y };
     };
 
+    // Helper functions for hint highlighting
+    const isPrimaryHintCell = (row: number, col: number) => {
+        return hint?.primary_cell?.row === row && hint?.primary_cell?.col === col;
+    };
+
+    const isAffectedHintCell = (row: number, col: number) => {
+        return hint?.affected_cells?.some((cell: any) => cell.row === row && cell.col === col);
+    };
+
+    const shouldHighlightCell = (row: number, col: number) => {
+        return isPrimaryHintCell(row, col) || isAffectedHintCell(row, col);
+    };
+
+    const getHintHighlightType = (row: number, col: number) => {
+        if (isPrimaryHintCell(row, col)) return 'primary';
+        if (isAffectedHintCell(row, col)) return 'affected';
+        return null;
+    };
+
     return (
         <>
             <div ref={gridRef} className="relative inline-flex flex-col border-4 border-slate-800 bg-white shadow-2xl rounded-lg">
@@ -117,6 +137,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates }) =>
                                     isActive={activeCell?.row === r && activeCell?.col === c}
                                     onClick={(event) => handleCellClick(r, c, event)}
                                     candidates={candidates?.[r]?.[c] || []}
+                                    hintHighlightType={getHintHighlightType(r, c)}
                                 />
                             </div>
                         ))}

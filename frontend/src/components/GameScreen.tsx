@@ -19,12 +19,14 @@ interface GameScreenProps {
     board: Board;
     onMove: (row: number, col: number, value: number) => void;
     statsVisible: boolean;
+    hint?: any;
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({
     board,
     onMove,
     statsVisible,
+    hint,
 }) => {
     const { settings } = useGameSettings();
     const [candidates, setCandidates] = useState<number[][][]>([]);
@@ -42,7 +44,7 @@ const GameScreen: React.FC<GameScreenProps> = ({
 
     return (
         <div className="w-full flex justify-center overflow-x-auto gap-4 md:flex-row flex-col items-center">
-            <SudokuGrid board={board.board_state} onMove={onMove} candidates={candidates} />
+            <SudokuGrid board={board.board_state} onMove={onMove} candidates={candidates} hint={hint} />
             {statsVisible && (
                 <StatsPane
                     board={board.board_state}

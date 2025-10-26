@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -52,3 +52,20 @@ class GameMove(BaseModel):
     row: int
     col: int
     value: int
+
+
+# Schema for hint information
+class Hint(BaseModel):
+    strategy: str  # "naked_single", "hidden_single", "naked_pair", etc.
+    explanation: str  # Human-readable explanation
+    action: str  # What to do (e.g., "place value", "eliminate candidates")
+    primary_cell: Optional[dict] = (
+        None  # {"row": int, "col": int} - main cell to highlight
+    )
+    affected_cells: List[
+        dict
+    ] = []  # [{"row": int, "col": int}, ...] - cells involved in the strategy
+    value: Optional[int] = None  # Value to place (for singles)
+    candidates_to_remove: Optional[dict] = (
+        None  # {"cells": [...], "values": [...]} - for eliminations
+    )

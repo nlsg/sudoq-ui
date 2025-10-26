@@ -8,6 +8,7 @@ from app.sudoku.schemas import (
     SudokuBoardCreate,
     SudokuBoardUpdate,
     GameMove,
+    Hint,
 )
 from app.sudoku.service import BoardService
 
@@ -101,7 +102,7 @@ async def make_move_on_board(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{board_id}/hint")
+@router.get("/{board_id}/hint", response_model=Hint)
 async def get_hint_for_board(
     board_id: int, service: BoardService = Depends(get_board_service)
 ):

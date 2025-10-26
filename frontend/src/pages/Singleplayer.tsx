@@ -20,6 +20,7 @@ const Singleplayer: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [errorCount, setErrorCount] = useState(0);
     const [statsVisible, setStatsVisible] = useState(false);
+    const [currentHint, setCurrentHint] = useState<any>(null);
 
     useEffect(() => {
         // For demo, assume user_id=1, load or create singleplayer
@@ -66,13 +67,24 @@ const Singleplayer: React.FC = () => {
             const res = await fetch(`/api/v1/boards/${board.id}/hint`);
             if (res.ok) {
                 const hint = await res.json();
-                handleMove(hint.row, hint.col, hint.value);
+                setCurrentHint(hint);
             } else {
                 alert('No hint available');
             }
         } catch (error) {
             console.error('Hint failed:', error);
         }
+    };
+
+    const applyHint = () => {
+        if (currentHint && currentHint.action === 'place_value' && currentHint.value && currentHint.primary_cell) {
+            handleMove(currentHint.primary_cell.row, currentHint.primary_cell.col, currentHint.value);
+            setCurrentHint(null);
+        }
+    };
+
+    const dismissHint = () => {
+        setCurrentHint(null);
     };
 
     const solveGame = async () => {
@@ -133,6 +145,9 @@ const Singleplayer: React.FC = () => {
                 onSolveGame={solveGame}
                 onToggleStats={() => setStatsVisible(!statsVisible)}
                 statsVisible={statsVisible}
+                hint={currentHint}
+                onApplyHint={applyHint}
+                onDismissHint={dismissHint}
             />
             {currentBoard && gameCompleted ? (
                 <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
@@ -141,6 +156,7 @@ const Singleplayer: React.FC = () => {
                     board={currentBoard}
                     onMove={handleMove}
                     statsVisible={statsVisible}
+                    hint={currentHint}
                 />
             ) : null}
         </div>

@@ -405,7 +405,7 @@ wheels = [
 [[package]]
 name = "sudoq"
 version = "0.0.2"
-source = { git = "https://github.com/nlsg/sudo-q#a08a0f04249e7471ddeb3ccaf9a017c8f4809de1" }
+source = { git = "https://github.com/nlsg/sudo-q#1afb35ecce6f4e0fe1fcc7a96e4840e02ea56038" }
 
 [[package]]
 name = "typing-extensions"

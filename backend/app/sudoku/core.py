@@ -108,25 +108,73 @@ def get_solution(board_str: str) -> Optional[str]:
         return None
 
 
-def get_hint(board_str: str) -> Optional[Tuple[int, int, int]]:
-    """Return a hint (row, col, value) for an empty cell, or None if no hint."""
+def get_hint(board_str: str):
+    """Find the next logical hint using strategic solver strategies."""
     try:
+        from sudoq.solvers.strategies import all_strategies
+
         grid = Grid.from_string(board_str)
-        # Find empty cells
-        empty_cells = []
-        for r in range(9):
-            for c in range(9):
-                if grid.get_cell((r, c)) == 0:
-                    empty_cells.append((r, c))
-        if not empty_cells:
+        if grid.is_complete():
             return None
+
+        # Try each strategy in order to find the next logical hint
+        for strategy in all_strategies:
+            cell = strategy.get_placement(grid)
+            if cell:
+                # Found a placement, convert to hint format
+                r, c = cell.position
+                value = cell.value
+
+                # Get strategy name
+                strategy_name = strategy.__class__.__name__.lower()
+
+                # Create explanation based on strategy
+                if strategy_name == "nakedsingle":
+                    explanation = f"Cell ({r}, {c}) can only contain {value}"
+                elif strategy_name == "hiddensingle":
+                    explanation = f"Value {value} can only go in cell ({r}, {c}) in its row/column/box"
+                elif strategy_name in ["nakedpair", "nakedtriple", "nakedquad"]:
+                    set_name = strategy_name.replace("naked", "").lower()
+                    explanation = f"Naked {set_name} eliminates candidates, allowing {value} at ({r}, {c})"
+                elif strategy_name in ["hiddenpair", "hiddentriple", "hiddenquad"]:
+                    set_name = strategy_name.replace("hidden", "").lower()
+                    explanation = (
+                        f"Hidden {set_name} indicates {value} belongs at ({r}, {c})"
+                    )
+                else:
+                    explanation = f"{strategy_name.replace('_', ' ').title()} technique found {value} at ({r}, {c})"
+
+                return {
+                    "strategy": strategy_name,
+                    "explanation": explanation,
+                    "action": "place_value",
+                    "primary_cell": {"row": r, "col": c},
+                    "affected_cells": [{"row": r, "col": c}],
+                    "value": value,
+                }
+
+        # No logical hint found, fall back to revealing a value
         solution = get_solution(board_str)
         if not solution:
             return None
-        hint_pos = random.choice(empty_cells)
-        r, c = hint_pos
+
+        empty_cells = [
+            (r, c) for r in range(9) for c in range(9) if grid.get_cell((r, c)) == 0
+        ]
+        if not empty_cells:
+            return None
+
+        r, c = random.choice(empty_cells)
         value = int(solution[r * 9 + c])
-        return (r, c, value)
+        return {
+            "strategy": "solution_hint",
+            "explanation": f"The value {value} goes in cell ({r}, {c}).",
+            "action": "place_value",
+            "primary_cell": {"row": r, "col": c},
+            "affected_cells": [{"row": r, "col": c}],
+            "value": value,
+        }
+
     except ValueError:
         return None
 
