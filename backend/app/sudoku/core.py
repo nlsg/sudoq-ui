@@ -1,12 +1,24 @@
 import random
 from typing import Optional, Tuple, Literal, List
+import copy
 from sudoq import Grid, reducers, Cell
-from sudoq.generators import PuzzleGenerator, RandomCellReducer, DigitReducer
+from sudoq.generators import PuzzleGenerator
+from sudoq.generators.reducers import (
+    GenericReducer,
+    RandomCellReducer,
+    DigitReducer,
+    CompositeReducer,
+    SequentialReducer,
+)
 from sudoq.solvers import BacktrackingSolver
+from sudoq.solvers.strategies import all_strategies
 
+from app.sudoku.schemas import Hint
 from app.config import settings
 
 type Difficulty = Literal["easy", "medium", "hard"]
+
+_all_strategies = list(all_strategies)
 
 
 def generate_puzzle(difficulty: Difficulty = "medium") -> str:
@@ -23,31 +35,38 @@ def generate_puzzle(difficulty: Difficulty = "medium") -> str:
     elif difficulty == "medium":
         generator = PuzzleGenerator(reducers=[RandomCellReducer()], min_clues=0)
     elif difficulty == "hard":
+        digits = set(range(1, 10))
+        complete_reductions = random.choices(list(digits), k=2)
+        partial_reductions = random.choices(
+            list(digits - set(complete_reductions)), k=5
+        )
+        print(f"{complete_reductions=}\n{partial_reductions=}")
         generator = PuzzleGenerator(
-            reducers=[
-                DigitReducer(random.choice(range(1, 10))),
-                RandomCellReducer(),
+            max_clues=0,
+            min_clues=0,
+            reducers=[DigitReducer(cr, 0) for cr in complete_reductions]
+            + [
+                CompositeReducer(
+                    [DigitReducer(cr, 2) for cr in partial_reductions]
+                    + [GenericReducer(lambda d: d not in partial_reductions + [0])]
+                )
             ],
         )
     elif difficulty == "expert":
         generator = PuzzleGenerator(
             max_clues=0,
             reducers=[
-                reducers.SequentialReducer(
+                DigitReducer(random.choice(range(1, 10)), 0),
+                reducers.CompositeReducer(
                     [
-                        DigitReducer(random.choice(range(1, 10)), 0),
-                        reducers.CompositeReducer(
-                            [
-                                DigitReducer(random.choice(range(1, 5)), 0),
-                                DigitReducer(random.choice(range(1, 5))),
-                                DigitReducer(random.choice(range(5, 10)), 0),
-                                DigitReducer(random.choice(range(5, 10))),
-                            ]
-                        ),
-                        reducers.RandomCellReducer(),
-                        # reducers.RandomCellReducer()
+                        DigitReducer(random.choice(range(1, 5)), 0),
+                        DigitReducer(random.choice(range(1, 5))),
+                        DigitReducer(random.choice(range(5, 10)), 0),
+                        DigitReducer(random.choice(range(5, 10))),
                     ]
-                )
+                ),
+                reducers.RandomCellReducer(),
+                # reducers.RandomCellReducer()
             ],
         )
 
@@ -108,17 +127,15 @@ def get_solution(board_str: str) -> Optional[str]:
         return None
 
 
-def get_hint(board_str: str):
+def get_hint(board_str: str) -> Hint:
     """Find the next logical hint using strategic solver strategies."""
     try:
-        from sudoq.solvers.strategies import all_strategies
-
         grid = Grid.from_string(board_str)
         if grid.is_complete():
             return None
 
-        # Try each strategy in order to find the next logical hint
-        for strategy in all_strategies:
+        random.shuffle(_all_strategies)
+        for strategy in _all_strategies:
             cell = strategy.get_placement(grid)
             if cell:
                 # Found a placement, convert to hint format
@@ -144,14 +161,14 @@ def get_hint(board_str: str):
                 else:
                     explanation = f"{strategy_name.replace('_', ' ').title()} technique found {value} at ({r}, {c})"
 
-                return {
-                    "strategy": strategy_name,
-                    "explanation": explanation,
-                    "action": "place_value",
-                    "primary_cell": {"row": r, "col": c},
-                    "affected_cells": [{"row": r, "col": c}],
-                    "value": value,
-                }
+                return Hint(
+                    strategy=strategy_name,
+                    explanation=explanation,
+                    action="place_value",
+                    primary_cell={"row": r, "col": c},
+                    affected_cells=[{"row": r, "col": c}],
+                    value=value,
+                )
 
         # No logical hint found, fall back to revealing a value
         solution = get_solution(board_str)
