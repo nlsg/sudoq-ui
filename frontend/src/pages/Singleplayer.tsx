@@ -27,6 +27,8 @@ const Singleplayer: React.FC = () => {
         createBoard(1);
     }, []);
 
+    useEffect(() => setCurrentHint(null), [board])
+
     const createBoard = async (userId: number, selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
         setLoading(true);
         try {
