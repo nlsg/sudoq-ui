@@ -96,7 +96,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
         return { cellWidth, cellHeight, borderWidth, totalCellGap };
     };
 
-    const { cellWidth, cellHeight, borderWidth, totalCellGap } = getCellDimensions();
+    const { cellWidth, cellHeight, borderWidth } = getCellDimensions();
 
     const calculateCellPosition = (row: number, col: number) => {
         const x = gridPosition.x + (col * cellWidth) + borderWidth;
@@ -111,10 +111,6 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
 
     const isAffectedHintCell = (row: number, col: number) => {
         return hint?.affected_cells?.some((cell: any) => cell.row === row && cell.col === col);
-    };
-
-    const shouldHighlightCell = (row: number, col: number) => {
-        return isPrimaryHintCell(row, col) || isAffectedHintCell(row, col);
     };
 
     const getHintHighlightType = (row: number, col: number) => {
