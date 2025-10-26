@@ -135,7 +135,14 @@ const Singleplayer: React.FC = () => {
         81;
 
     return (
-        <>
+        <>                   {/* Hint display */}
+            {currentHint && (
+                <Hint
+                    onApplyHint={applyHint}
+                    onDismissHint={dismissHint}
+                    hint={currentHint}
+                />
+            )}
             <div className="flex flex-row items-start justify-center w-full p-3 sm:p-6 max-w-full box-border text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900">
                 <div className="flex flex-col items-center w-full">
                     <PuzzleHeader
@@ -150,9 +157,6 @@ const Singleplayer: React.FC = () => {
                         onSolveGame={solveGame}
                         onToggleStats={() => setStatsVisible(!statsVisible)}
                         statsVisible={statsVisible}
-                        hint={currentHint}
-                        onApplyHint={applyHint}
-                        onDismissHint={dismissHint}
                     />
 
                     {currentBoard && gameCompleted ? (
@@ -164,14 +168,7 @@ const Singleplayer: React.FC = () => {
                             hint={currentHint}
                         />
                     ) : null}
-                    {/* Hint display */}
-                    {currentHint && (
-                        <Hint
-                            onApplyHint={applyHint}
-                            onDismissHint={dismissHint}
-                            hint={currentHint}
-                        />
-                    )}
+
                 </div>
                 {statsVisible && currentBoard && (
                     <div className="mr-6">
