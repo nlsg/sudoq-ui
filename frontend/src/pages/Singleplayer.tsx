@@ -4,7 +4,7 @@ import WinningScreen from '../components/WinningScreen';
 import PuzzleHeader from '../components/PuzzleHeader';
 import StatsPane from '../components/StatsPane';
 import Hint from '../components/Hint';
-import { boardApi } from '../api/services/api';
+import { boardApi } from '../api/service';
 
 interface Board {
     id: number;
