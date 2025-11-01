@@ -1,7 +1,8 @@
 import type { paths, components } from './types';
 
 // Base API configuration
-const API_BASE_URL = 'http://localhost:8000';
+// const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 // Generic API response types
 type ApiResponse<T> = {
