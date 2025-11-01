@@ -4,13 +4,12 @@ interface SudokuCellProps {
     value: number | null;
     onChange: (value: number) => void;
     readonly: boolean;
-    isActive: boolean;
     onClick: (event?: React.MouseEvent) => void;
     candidates: number[];
     hintHighlightType?: 'primary' | 'affected' | null;
 }
 
-const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, isActive, onClick, candidates, hintHighlightType }) => {
+const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, onClick, candidates, hintHighlightType }) => {
     const handleDigitClick = (digit: number) => {
         onChange(digit);
     };

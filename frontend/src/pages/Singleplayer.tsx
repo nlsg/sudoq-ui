@@ -4,6 +4,7 @@ import WinningScreen from '../components/WinningScreen';
 import PuzzleHeader from '../components/PuzzleHeader';
 import StatsPane from '../components/StatsPane';
 import Hint from '../components/Hint';
+import { boardApi } from '../api/services/api';
 
 interface Board {
     id: number;
@@ -22,6 +23,8 @@ const Singleplayer: React.FC = () => {
     const [errorCount, setErrorCount] = useState(0);
     const [statsVisible, setStatsVisible] = useState(false);
     const [currentHint, setCurrentHint] = useState<any>(null);
+    const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | 'expert'>('medium');
+
 
     useEffect(() => {
         // For demo, assume user_id=1, load or create singleplayer
@@ -33,12 +36,15 @@ const Singleplayer: React.FC = () => {
     const createBoard = async (userId: number, selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
         setLoading(true);
         try {
-            const newRes = await fetch(`/api/v1/boards/singleplayer?user_id=${userId}&difficulty=${selectedDifficulty || 'medium'}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const response = await boardApi.createSingleplayerGame({
+                user_id: userId,
+                difficulty: selectedDifficulty || 'medium'
             });
-            const newBoard = await newRes.json();
-            setBoard(newBoard);
+            if (response.data) {
+                setBoard(response.data as any); // Type assertion needed due to interface differences
+            } else {
+                console.error('Failed to create board:', response.error);
+            }
         } catch (error) {
             console.error('Failed to load board:', error);
         }
@@ -48,15 +54,16 @@ const Singleplayer: React.FC = () => {
     const handleMove = async (row: number, col: number, value: number) => {
         if (!board) return;
         try {
-            const res = await fetch(`/api/v1/boards/${board.id}/move`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ player_id: 1, row, col, value }),
+            const response = await boardApi.makeMove(board.id, {
+                player_id: 1,
+                row,
+                col,
+                value,
             });
-            if (res.ok) {
-                const updatedBoard = await res.json();
-                setBoard(updatedBoard);
+            if (response.data) {
+                setBoard(response.data as any); // Type assertion needed due to interface differences
             } else {
+                console.error('Move failed:', response.error);
                 setErrorCount(prev => prev + 1);
             }
         } catch (error) {
@@ -67,11 +74,11 @@ const Singleplayer: React.FC = () => {
     const getHint = async () => {
         if (!board) return;
         try {
-            const res = await fetch(`/api/v1/boards/${board.id}/hint`);
-            if (res.ok) {
-                const hint = await res.json();
-                setCurrentHint(hint);
+            const response = await boardApi.getHint(board.id);
+            if (response.data) {
+                setCurrentHint(response.data);
             } else {
+                console.error('Hint failed:', response.error);
                 alert('No hint available');
             }
         } catch (error) {
@@ -85,19 +92,14 @@ const Singleplayer: React.FC = () => {
             setCurrentHint(null);
         }
     };
-
-    const dismissHint = () => {
-        setCurrentHint(null);
-    };
-
     const solveGame = async () => {
         if (!board) return;
         try {
-            const res = await fetch(`/api/v1/boards/${board.id}/solve`);
-            if (res.ok) {
-                const data = await res.json();
-                setBoard(prev => prev ? { ...prev, board_state: data.solution, status: 'completed' } : null);
+            const response = await boardApi.solveGame(board.id);
+            if (response.data && typeof response.data === 'object' && 'solution' in response.data) {
+                setBoard(prev => prev ? { ...prev, board_state: (response.data as any).solution, status: 'completed' } : null);
             } else {
+                console.error('Solve failed:', response.error);
                 alert('Could not solve the board');
             }
         } catch (error) {
@@ -105,25 +107,21 @@ const Singleplayer: React.FC = () => {
         }
     };
 
-    const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | 'expert'>('medium');
-
     const startNewGame = () => {
         createBoard(1, difficulty);
         setErrorCount(0);
     };
 
-    const createLoadingBoard = (): Board => ({
+    const currentBoard = loading ? {
         id: 0,
-        board_state: '0'.repeat(81), // empty grid
+        board_state: '0'.repeat(81),
         status: 'loading',
         player1_id: 1,
         player2_id: 1,
         current_player_id: 1,
         created_at: '',
         updated_at: ''
-    });
-
-    const currentBoard = loading ? createLoadingBoard() : board;
+    } : board;
 
     if (!board && !loading) return <button onClick={startNewGame}>Start New Game</button>;
 
@@ -135,11 +133,11 @@ const Singleplayer: React.FC = () => {
         81;
 
     return (
-        <>                   {/* Hint display */}
+        <>
             {currentHint && (
                 <Hint
                     onApplyHint={applyHint}
-                    onDismissHint={dismissHint}
+                    onDismissHint={() => setCurrentHint(null)}
                     hint={currentHint}
                 />
             )}

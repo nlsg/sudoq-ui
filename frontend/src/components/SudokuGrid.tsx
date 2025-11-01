@@ -130,7 +130,6 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
                                     value={cell}
                                     onChange={(value) => handleCellChange(r, c, value)}
                                     readonly={cell !== null}
-                                    isActive={activeCell?.row === r && activeCell?.col === c}
                                     onClick={(event) => handleCellClick(r, c, event)}
                                     candidates={candidates?.[r]?.[c] || []}
                                     hintHighlightType={getHintHighlightType(r, c)}

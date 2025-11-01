@@ -1,15 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-
-interface User {
-    id: number;
-    username: string;
-    email?: string;
-    avatar_url?: string;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-}
+import { userApi, type User } from '../api/services/api';
 
 interface UserContextType {
     user: User | null;
@@ -47,11 +38,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const fetchUser = async (userId: number) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`/api/v1/users/${userId}`);
-            if (response.ok) {
-                const userData: User = await response.json();
-                setUser(userData);
+            const response = await userApi.readUser(userId);
+            if (response.data) {
+                setUser(response.data);
             } else {
+                console.error('Failed to fetch user:', response.error);
                 createGuestUser();
             }
         } catch (error) {
@@ -65,15 +56,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const createGuestUser = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('/api/v1/users/guest', {
-                method: 'POST',
-            });
-            if (response.ok) {
-                const userData: User = await response.json();
-                setUser(userData);
-                localStorage.setItem('guestUserId', userData.id.toString());
+            const response = await userApi.createGuest();
+            if (response.data) {
+                setUser(response.data);
+                localStorage.setItem('guestUserId', response.data.id.toString());
             } else {
-                console.error('Failed to create guest user');
+                console.error('Failed to create guest user:', response.error);
             }
         } catch (error) {
             console.error('Error creating guest user:', error);
