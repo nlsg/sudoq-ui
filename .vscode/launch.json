@@ -11,12 +11,15 @@
             "module": "uvicorn",
             "args": [
                 "app.main:app",
-                "--reload"
+                "--reload",
+                "--host",
+                "0.0.0.0"
             ],
             "cwd": "${workspaceFolder}/backend",
             "jinja": true,
             "envFile": "${workspaceFolder}/.env",
             "python": "${workspaceFolder}/backend/.venv/bin/python", // <-- Explicit path
+            "justMyCode": false,
         },
         {
             "name": "Debug API",

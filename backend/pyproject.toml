@@ -11,7 +11,7 @@ dependencies = [
     "aiosqlite>=0.20.0",
     "psycopg2-binary>=2.9.0",
     "uvicorn>=0.38.0",
-    "pydantic[email]>=2.12.3",
+    "pydantic[email]>=3.12.3",
     "sudoq",
 ]
 
