@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug backend",
+            "name": "backend: debug",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -22,17 +22,34 @@
             "justMyCode": false,
         },
         {
-            "name": "Debug API",
+            "name": "backend: launch api",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:8000/docs",
         },
         {
-            "name": "Debug Frontend",
+            "name": "frontend: debug",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:5173",
             "webRoot": "${workspaceFolder}/frontend"
         },
+        {
+            "name": "frontend: run dev",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev",
+            "cwd": "${workspaceFolder}/frontend"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack",
+            "configurations": [
+                "backend: debug",
+                "frontend: run dev",
+                "frontend: debug"
+            ]
+        }
     ]
 }
