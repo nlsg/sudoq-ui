@@ -10,6 +10,8 @@ from app.sudoku.core import (
     get_solution,
     get_candidates_all,
 )
+import json
+from typing import List, Optional
 
 
 class GameService:
@@ -22,6 +24,7 @@ class GameService:
         player1_id: int,
         player2_id: int = None,
         difficulty: str = None,
+        digit_types: Optional[List[str]] = None,
     ):
         # Check player1 exists
         result = await self.db.execute(select(User).where(User.id == player1_id))
@@ -34,6 +37,7 @@ class GameService:
 
         db_game = SudokuGameModel(
             board_state=board_state,
+            digit_types=json.dumps(digit_types) if digit_types else None,
             player1_id=player1_id,
             player2_id=player2_id,
             difficulty=difficulty,
@@ -80,7 +84,12 @@ class GameService:
         await self.db.commit()
         return True
 
-    async def create_singleplayer_game(self, user_id: int, difficulty: str = "medium"):
+    async def create_singleplayer_game(
+        self,
+        user_id: int,
+        difficulty: str = "medium",
+        digit_types: Optional[List[str]] = None,
+    ):
         # Get user or create dummy
         result = await self.db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
@@ -98,9 +107,9 @@ class GameService:
 
         board_state = generate_puzzle(difficulty)
 
-        # Create game for singleplayer
         db_game = SudokuGameModel(
             board_state=board_state,
+            digit_types=json.dumps(digit_types) if digit_types else None,
             player1_id=user_id,
             difficulty=difficulty,
         )
@@ -171,6 +180,4 @@ class GameService:
         db_game = await self.get_game(game_id)
         if not db_game:
             raise ValueError("Game not found")
-
-        candidates = get_candidates_all(db_game.board_state)
-        return {"candidates": candidates}
+        return {"candidates": get_candidates_all(db_game.board_state)}

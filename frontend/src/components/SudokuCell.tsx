@@ -7,9 +7,26 @@ interface SudokuCellProps {
     onClick: (event?: React.MouseEvent) => void;
     candidates: number[];
     hintHighlightType?: 'primary' | 'affected' | null;
+    digitTypes?: string[] | null;
 }
 
-const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, onClick, candidates, hintHighlightType }) => {
+const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, onClick, candidates, hintHighlightType, digitTypes }) => {
+    // Map numeric value to display symbol
+    const getDisplayValue = (num: number | null): string | null => {
+        if (num === null || num === 0) return null;
+        if (digitTypes && digitTypes.length >= num) {
+            return digitTypes[num - 1];
+        }
+        return num.toString();
+    };
+
+    // Map display symbol back to numeric value for candidates
+    const getCandidateDisplay = (candidateNum: number): string => {
+        if (digitTypes && digitTypes.length >= candidateNum) {
+            return digitTypes[candidateNum - 1];
+        }
+        return candidateNum.toString();
+    };
     const handleDigitClick = (digit: number) => {
         onChange(digit);
     };
@@ -55,12 +72,12 @@ const SudokuCell: React.FC<SudokuCellProps> = ({ value, onChange, readonly, onCl
             tabIndex={readonly ? undefined : 0}
             title="Select a number"
         >
-            {value ? value : null}
+            {getDisplayValue(value)}
             {!value && candidates.length > 0 && (
                 <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[8px] sm:text-[10px] md:text-[12px] text-slate-600 pointer-events-none">
                     {Array.from({ length: 9 }, (_, i) => (
                         <div key={i} className="flex items-center justify-center">
-                            {candidates.includes(i + 1) ? i + 1 : ''}
+                            {candidates.includes(i + 1) ? getCandidateDisplay(i + 1) : ''}
                         </div>
                     ))}
                 </div>

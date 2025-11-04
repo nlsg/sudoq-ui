@@ -7,9 +7,10 @@ interface SudokuGridProps {
     onMove: (row: number, col: number, value: number) => void;
     candidates?: number[][][];
     hint?: any;
+    digitTypes?: string[] | null;
 }
 
-const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint }) => {
+const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint, digitTypes }) => {
     const [grid, setGrid] = useState<(number | null)[][]>([]);
     const [activeCell, setActiveCell] = useState<{ row: number, col: number } | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -70,6 +71,14 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
     const handleCellChange = (row: number, col: number, value: number) => {
         if (grid[row][col] !== null) return; // only if empty originally
         onMove(row, col, value);
+    };
+
+    // Get display symbol for digit wheel
+    const getWheelDisplay = (number: number): string => {
+        if (digitTypes && digitTypes.length >= number) {
+            return digitTypes[number - 1];
+        }
+        return number.toString();
     };
 
 
@@ -133,6 +142,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
                                     onClick={(event) => handleCellClick(r, c, event)}
                                     candidates={candidates?.[r]?.[c] || []}
                                     hintHighlightType={getHintHighlightType(r, c)}
+                                    digitTypes={digitTypes}
                                 />
                             </div>
                         ))}
@@ -174,7 +184,7 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({ board, onMove, candidates, hint
                                 setActiveCell(null);
                             }}
                         >
-                            {number}
+                            {getWheelDisplay(number)}
                         </button>
                     ))}
                 </div>,

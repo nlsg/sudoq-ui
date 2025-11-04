@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -8,6 +8,7 @@ from app.sudoku.schemas import (
     SudokuGameCreate,
     GameMove,
     Hint,
+    CandidatesMap,
 )
 from app.sudoku.service import GameService
 
@@ -29,6 +30,7 @@ async def create_game(
             game.player1_id,
             game.player2_id,
             game.difficulty,
+            game.digit_types,
         )
         return db_game
     except ValueError as e:
@@ -64,11 +66,13 @@ async def delete_game(game_id: int, service: GameService = Depends(get_game_serv
 
 @router.post("/singleplayer", response_model=SudokuGame)
 async def create_singleplayer_game(
-    user_id: int,
-    difficulty: str = "medium",
+    game: SudokuGameCreate,
     service: GameService = Depends(get_game_service),
 ):
-    db_game = await service.create_singleplayer_game(user_id, difficulty)
+    # db_game = await service.create_singleplayer_game(user_id, difficulty, digit_types)
+    db_game = await service.create_singleplayer_game(
+        game.player1_id, game.difficulty, game.digit_types
+    )
     return db_game
 
 
@@ -107,7 +111,7 @@ async def solve_game(game_id: int, service: GameService = Depends(get_game_servi
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{game_id}/candidates")
+@router.get("/{game_id}/candidates", response_model=CandidatesMap)
 async def get_candidates(
     game_id: int, service: GameService = Depends(get_game_service)
 ):

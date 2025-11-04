@@ -2,9 +2,10 @@ import React from 'react';
 
 interface StatsPaneProps {
     board: string;
+    digitTypes?: string[] | null
 }
 
-const StatsPane: React.FC<StatsPaneProps> = ({ board }) => {
+const StatsPane: React.FC<StatsPaneProps> = ({ board, digitTypes }) => {
     // Calculate digit frequencies
     const getDigitFrequencies = (boardStr: string): { [key: number]: number } => {
         const freq: { [key: number]: number } = {};
@@ -35,7 +36,7 @@ const StatsPane: React.FC<StatsPaneProps> = ({ board }) => {
                     const count = frequencies[digit];
                     return (
                         <div key={digit} className="flex justify-between items-center text-sm md:text-base">
-                            <span className="font-medium text-slate-700 dark:text-slate-300">Digit {digit}:</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-300">Digit {digitTypes ? digitTypes[digit - 1] : digit}:</span>
                             <span className="text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded min-w-[2rem] text-center">{count}</span>
                         </div>
                     );

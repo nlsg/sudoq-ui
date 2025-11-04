@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaGithub } from 'react-icons/fa';
+import { Code } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useGameSettings } from '../contexts/GameSettingsContext';
 import { useUser } from '../contexts/UserContext';
@@ -59,16 +61,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         onClick={onClose}
                         className="block px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-slate-100 rounded-md transition-colors duration-200 font-medium"
                     >
-                        Home
+                        Singleplayer
                     </Link>
                     <Link
-                        to="/singleplayer"
+                        to="/home"
                         onClick={onClose}
                         className="block px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-slate-100 rounded-md transition-colors duration-200 font-medium"
                     >
-                        Singleplayer
+                        About
                     </Link>
                 </nav>
+
+
+
+
+
+
 
                 {/* User Account */}
                 {user && (
@@ -106,8 +114,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                             />
                         </button>
                     </div>
-                </div>
-            </div>
+                    <a
+                        href="https://github.com/nlsg/sudo-q"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">View source</span>
+                            <FaGithub />
+                        </div>
+                    </a>
+                </div >
+            </div >
         </>
     );
 };

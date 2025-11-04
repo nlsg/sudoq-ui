@@ -22,27 +22,18 @@ class ApiClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<ApiResponse<T>> {
-        try {
-            const response = await fetch(`${this.baseURL}${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers,
-                },
-                ...options,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return { data };
-        } catch (error) {
-            return {
-                data: null as T,
-                error: error instanceof Error ? error.message : 'Unknown error',
-            };
+        const response = await fetch(`${this.baseURL}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            ...options,
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return { data };
     }
 
     async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
@@ -130,12 +121,10 @@ export const boardApi = {
     },
 
     // POST /api/v1/boards/singleplayer
-    createSingleplayerGame: async (params: { user_id: number; difficulty?: string }) => {
-        const queryParams = new URLSearchParams({
-            user_id: params.user_id.toString(),
-            ...(params.difficulty && { difficulty: params.difficulty }),
-        });
-        return apiClient.post<components['schemas']['SudokuGame']>(`/api/v1/boards/singleplayer?${queryParams}`);
+    createSingleplayerGame: async (gameData: components['schemas']['SudokuGameCreate']) => {
+        return apiClient.post<components['schemas']['SudokuGame']>(`/api/v1/boards/singleplayer`,
+            gameData
+        );
     },
 
     // PUT /api/v1/boards/{game_id}/move
@@ -155,7 +144,7 @@ export const boardApi = {
 
     // GET /api/v1/boards/{game_id}/candidates
     getCandidates: async (gameId: number) => {
-        return apiClient.get<unknown>(`/api/v1/boards/${gameId}/candidates`);
+        return apiClient.get<components["schemas"]["CandidatesMap"]>(`/api/v1/boards/${gameId}/candidates`);
     },
 };
 

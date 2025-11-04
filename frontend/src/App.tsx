@@ -14,8 +14,8 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="singleplayer" element={<Singleplayer />} />
+                <Route index element={<Singleplayer />} />
+                <Route path="home" element={<Home />} />
               </Route>
             </Routes>
           </Router>

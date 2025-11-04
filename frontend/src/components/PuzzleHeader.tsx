@@ -1,6 +1,5 @@
 import React from 'react';
 import HamburgerButton from './HamburgerButton';
-import ThemeToggle from './ThemeToggle';
 
 interface PuzzleHeaderProps {
     gameCompleted: boolean;
@@ -8,7 +7,9 @@ interface PuzzleHeaderProps {
     difficulty: 'easy' | 'medium' | 'hard' | 'expert';
     remainingCells: number;
     boardId: number;
+    digitTypes?: string[];
     onDifficultyChange: (difficulty: 'easy' | 'medium' | 'hard' | 'expert') => void;
+    onDigitTypesChange: (digitTypes: string[] | undefined) => void;
     onStartNewGame: () => void;
     onGetHint: () => void;
     onSolveGame: () => void;
@@ -48,7 +49,7 @@ const GameClock: React.FC<{ gameCompleted?: boolean; boardId?: number }> = ({ ga
 
     return <div className="game-clock text-slate-900 dark:text-slate-100">Time: {formatTime(time)}</div>;
 };
-const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, onDifficultyChange, onStartNewGame, onGetHint, onSolveGame, onToggleStats, statsVisible }) => {
+const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, difficulty, remainingCells, boardId, digitTypes, onDifficultyChange, onDigitTypesChange, onStartNewGame, onGetHint, onSolveGame, onToggleStats, statsVisible }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     return (
@@ -112,10 +113,6 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                 <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="flex flex-wrap gap-4 items-center">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Theme:</span>
-                            <ThemeToggle />
-                        </div>
-                        <div className="flex items-center gap-2">
                             <label htmlFor="difficulty-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                 Difficulty:
                             </label>
@@ -129,6 +126,26 @@ const PuzzleHeader: React.FC<PuzzleHeaderProps> = ({ gameCompleted, errorCount, 
                                 <option value="medium">Medium</option>
                                 <option value="hard">Hard</option>
                                 <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <label htmlFor="digit-type-select" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Digits:
+                            </label>
+                            <select
+                                id="digit-type-select"
+                                value={digitTypes ? 'emojis' : 'numbers'}
+                                onChange={(e) => {
+                                    if (e.target.value === 'numbers') {
+                                        onDigitTypesChange(undefined);
+                                    } else if (e.target.value === 'emojis') {
+                                        onDigitTypesChange(['😉', '😂', '🫥', '🥶', '😦', '🤬', '🥱', '😭', '😰']);
+                                    }
+                                }}
+                                className="px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="numbers">Numbers</option>
+                                <option value="emojis">Emojis</option>
                             </select>
                         </div>
                         <button

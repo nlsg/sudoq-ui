@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -10,6 +10,9 @@ class SudokuGame(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     board_state = Column(Text, nullable=False)  # Serialized game state
+    digit_types = Column(
+        Text, nullable=True
+    )  # JSON string of digit types (e.g., ["1","2",...,"9"] or ["😉","😂",...])
     difficulty = Column(String, nullable=True)
     player1_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     player2_id = Column(

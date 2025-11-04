@@ -1,80 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import GameScreen from '../components/GameScreen';
 import WinningScreen from '../components/WinningScreen';
 import PuzzleHeader from '../components/PuzzleHeader';
 import StatsPane from '../components/StatsPane';
 import Hint from '../components/Hint';
 import { boardApi } from '../api/service';
+import { useUser } from '../contexts/UserContext';
+import type { SudokuGame } from '../api/service'
 
-interface Board {
-    id: number;
-    board_state: string;
-    status: string;
-    player1_id: number;
-    player2_id: number;
-    current_player_id: number;
-    winner_id?: number;
-    created_at: string;
-    updated_at: string;
-}
+
+
 const Singleplayer: React.FC = () => {
-    const [board, setBoard] = useState<Board | null>(null);
+    const { user } = useUser();
+    const [game, setGame] = useState<SudokuGame | null>(null);
     const [loading, setLoading] = useState(false);
     const [errorCount, setErrorCount] = useState(0);
     const [statsVisible, setStatsVisible] = useState(false);
     const [currentHint, setCurrentHint] = useState<any>(null);
     const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | 'expert'>('medium');
+    const [digitTypes, setDigitTypes] = useState<string[] | undefined>(undefined);
 
 
     useEffect(() => {
-        // For demo, assume user_id=1, load or create singleplayer
-        createBoard(1);
+        createBoard()
     }, []);
 
-    useEffect(() => setCurrentHint(null), [board])
+    useEffect(() => setCurrentHint(null), [game])
 
-    const createBoard = async (userId: number, selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
+    const createBoard = useCallback((selectedDifficulty?: 'easy' | 'medium' | 'hard' | 'expert') => {
+        if (!user) return
         setLoading(true);
-        try {
-            const response = await boardApi.createSingleplayerGame({
-                user_id: userId,
-                difficulty: selectedDifficulty || 'medium'
-            });
+        boardApi.createSingleplayerGame({
+            difficulty: selectedDifficulty ? selectedDifficulty : difficulty,
+            digit_types: digitTypes,
+            player1_id: user.id,
+        }).then(response => {
             if (response.data) {
-                setBoard(response.data as any); // Type assertion needed due to interface differences
-            } else {
-                console.error('Failed to create board:', response.error);
-            }
-        } catch (error) {
-            console.error('Failed to load board:', error);
-        }
-        setLoading(false);
-    };
+                setGame(response.data);
+                if (response.data.digit_types) {
+                    setDigitTypes(response.data.digit_types);
+                }
+                setErrorCount(0);
+            } else throw response.error
+        }).finally(() => setLoading(false))
+    }, [digitTypes, difficulty])
 
     const handleMove = async (row: number, col: number, value: number) => {
-        if (!board) return;
-        try {
-            const response = await boardApi.makeMove(board.id, {
-                player_id: 1,
-                row,
-                col,
-                value,
-            });
+        if (!game || !user) return;
+        boardApi.makeMove(game.id, {
+            player_id: user.id,
+            row,
+            col,
+            value,
+        }).then(response => {
             if (response.data) {
-                setBoard(response.data as any); // Type assertion needed due to interface differences
+                setGame(response.data);
             } else {
                 console.error('Move failed:', response.error);
                 setErrorCount(prev => prev + 1);
             }
-        } catch (error) {
-            console.error('Move failed:', error);
-        }
+        })
     };
 
     const getHint = async () => {
-        if (!board) return;
+        if (!game) return;
         try {
-            const response = await boardApi.getHint(board.id);
+            const response = await boardApi.getHint(game.id);
             if (response.data) {
                 setCurrentHint(response.data);
             } else {
@@ -93,11 +84,11 @@ const Singleplayer: React.FC = () => {
         }
     };
     const solveGame = async () => {
-        if (!board) return;
+        if (!game) return;
         try {
-            const response = await boardApi.solveGame(board.id);
+            const response = await boardApi.solveGame(game.id);
             if (response.data && typeof response.data === 'object' && 'solution' in response.data) {
-                setBoard(prev => prev ? { ...prev, board_state: (response.data as any).solution, status: 'completed' } : null);
+                setGame(prev => prev ? { ...prev, board_state: (response.data as any).solution, status: 'completed' } : null);
             } else {
                 console.error('Solve failed:', response.error);
                 alert('Could not solve the board');
@@ -108,28 +99,30 @@ const Singleplayer: React.FC = () => {
     };
 
     const startNewGame = () => {
-        createBoard(1, difficulty);
+        createBoard();
         setErrorCount(0);
     };
 
-    const currentBoard = loading ? {
+    const currentGame = loading ? {
+        board_state: "0".repeat(81),
+        digit_types: null,
+        mistakes_p1: 0,
+        mistakes_p2: 0,
+        valid_moves_p1: 1,
+        valid_moves_p2: 1,
         id: 0,
-        board_state: '0'.repeat(81),
-        status: 'loading',
-        player1_id: 1,
-        player2_id: 1,
-        current_player_id: 1,
-        created_at: '',
-        updated_at: ''
-    } : board;
+        player1_id: 0,
+        created_at: "",
+        updated_at: "",
+    } as SudokuGame : game;
 
-    if (!board && !loading) return <button onClick={startNewGame}>Start New Game</button>;
+    if (!game && !loading) return <button onClick={startNewGame}>Start New Game</button>;
 
-    const gameCompleted = currentBoard ? currentBoard.status === 'completed' : false;
+    const gameCompleted = !currentGame?.board_state.includes("0");
 
     // Calculate remaining cells
-    const remainingCells = currentBoard ?
-        81 - currentBoard.board_state.split('').filter(char => char !== '0').length :
+    const remainingCells = currentGame ?
+        81 - currentGame.board_state.split('').filter(char => char !== '0').length :
         81;
 
     return (
@@ -148,8 +141,13 @@ const Singleplayer: React.FC = () => {
                         errorCount={errorCount}
                         difficulty={difficulty}
                         remainingCells={remainingCells}
-                        boardId={currentBoard!.id}
+                        boardId={currentGame!.id}
+                        digitTypes={digitTypes}
                         onDifficultyChange={setDifficulty}
+                        onDigitTypesChange={(newDigitTypes) => {
+                            setDigitTypes(newDigitTypes);
+                            // createBoard()
+                        }}
                         onStartNewGame={startNewGame}
                         onGetHint={getHint}
                         onSolveGame={solveGame}
@@ -157,20 +155,20 @@ const Singleplayer: React.FC = () => {
                         statsVisible={statsVisible}
                     />
 
-                    {currentBoard && gameCompleted ? (
-                        <WinningScreen board={currentBoard} onPlayAgain={startNewGame} />
-                    ) : currentBoard ? (
+                    {currentGame && gameCompleted ? (
+                        <WinningScreen game={currentGame} onPlayAgain={startNewGame} />
+                    ) : currentGame ? (
                         <GameScreen
-                            board={currentBoard}
+                            game={currentGame}
                             onMove={handleMove}
                             hint={currentHint}
                         />
                     ) : null}
 
                 </div>
-                {statsVisible && currentBoard && (
+                {statsVisible && currentGame && (
                     <div className="mr-6">
-                        <StatsPane board={currentBoard.board_state} />
+                        <StatsPane board={currentGame.board_state} digitTypes={currentGame.digit_types} />
                     </div>
                 )}
 

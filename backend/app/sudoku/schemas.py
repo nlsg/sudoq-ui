@@ -1,20 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
+import json
 
 
 class SudokuGameBase(BaseModel):
     board_state: str
+    digit_types: Optional[List[str]] = None
     mistakes_p1: int
     mistakes_p2: int
     valid_moves_p1: int
     valid_moves_p2: int
 
 
-class SudokuGameCreate(SudokuGameBase):
+class SudokuGameCreate(BaseModel):
     player1_id: int
-    player2_id: Optional[int] = None
     difficulty: Optional[str] = None
+    digit_types: Optional[List[str]] = None
 
 
 class SudokuGameInDBBase(SudokuGameBase):
@@ -28,6 +30,15 @@ class SudokuGameInDBBase(SudokuGameBase):
     class Config:
         from_attributes = True
 
+    @field_validator("digit_types", mode="before")
+    def parse_digit_types(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                return []
+        return v
+
 
 class SudokuGame(SudokuGameInDBBase):
     pass
@@ -37,12 +48,10 @@ class SudokuGameInDB(SudokuGameInDBBase):
     pass
 
 
-# Schema for creating a new game (challenge another player)
 class GameChallenge(BaseModel):
     opponent_id: int
 
 
-# Schema for making a move
 class GameMove(BaseModel):
     player_id: int
     row: int
@@ -50,7 +59,6 @@ class GameMove(BaseModel):
     value: int
 
 
-# Schema for hint information
 class Hint(BaseModel):
     strategy: str  # "naked_single", "hidden_single", "naked_pair", etc.
     explanation: str  # Human-readable explanation
@@ -65,3 +73,7 @@ class Hint(BaseModel):
     candidates_to_remove: Optional[dict] = (
         None  # {"cells": [...], "values": [...]} - for eliminations
     )
+
+
+class CandidatesMap(BaseModel):
+    candidates: List[List[List[int]]]
