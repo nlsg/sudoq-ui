@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaGithub } from 'react-icons/fa';
-import { Code } from "lucide-react";
 import ThemeToggle from './ThemeToggle';
 import { useGameSettings } from '../contexts/GameSettingsContext';
 import { useUser } from '../contexts/UserContext';

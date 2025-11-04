@@ -39,7 +39,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 # Serve frontend
-frontend_dist_path = Path(__file__).parent / "../../frontend/dist"
+frontend_dist_path = Path(__file__).parent / "../public"
 app.mount(
     "/assets",
     StaticFiles(directory=frontend_dist_path / "assets"),
