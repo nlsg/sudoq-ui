@@ -19,7 +19,7 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Setup
+      - name: build frontend
         run: |
           cd frontend
           npm run build
